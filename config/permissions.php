@@ -24,4 +24,9 @@ return static function (): iterable {
     yield Permission::new('ROLE_ACTIVITY_LIST', "Consulter la liste des activités"); 
     yield Permission::new('ROLE_ACTIVITY_VIEW', "Consulter les détails d'une activité"); 
 
+    yield Permission::new('ROLE_PLATFORM_CREATE', "Créer une plateforme");
+    yield Permission::new('ROLE_PLATFORM_LIST', "Consulter la liste des plateformes");
+    yield Permission::new('ROLE_PLATFORM_UPDATE', "Modifier une plateforme");
+    yield Permission::new('ROLE_PLATFORM_DETAILS', "Consulter les détails d'une plateforme");
+
 };

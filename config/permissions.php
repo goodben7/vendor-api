@@ -29,4 +29,14 @@ return static function (): iterable {
     yield Permission::new('ROLE_PLATFORM_UPDATE', "Modifier une plateforme");
     yield Permission::new('ROLE_PLATFORM_DETAILS', "Consulter les détails d'une plateforme");
 
+    yield Permission::new('ROLE_MENU_CREATE', "Créer un menu");
+    yield Permission::new('ROLE_MENU_LIST', "Consulter la liste des menus");
+    yield Permission::new('ROLE_MENU_UPDATE', "Modifier un menu");
+    yield Permission::new('ROLE_MENU_DETAILS', "Consulter les détails d'un menu");
+
+    yield Permission::new('ROLE_CATEGORY_CREATE', "Créer une catégorie");
+    yield Permission::new('ROLE_CATEGORY_LIST', "Consulter la liste des catégories");
+    yield Permission::new('ROLE_CATEGORY_UPDATE', "Modifier une catégorie");
+    yield Permission::new('ROLE_CATEGORY_DETAILS', "Consulter les détails d'une catégorie");
+
 };

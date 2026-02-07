@@ -13,6 +13,9 @@ class UpdateCategoryProcessor implements ProcessorInterface
     {
     }
 
+    /**
+     * @param \App\Dto\UpdateCategoryDto $data 
+     */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
     {
         $model = new UpdateCategoryModel(

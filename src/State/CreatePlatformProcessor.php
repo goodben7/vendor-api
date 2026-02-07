@@ -13,6 +13,9 @@ class CreatePlatformProcessor implements ProcessorInterface
     {
     }
 
+    /**
+     * @param \App\Dto\CreatePlatformDto $data 
+     */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
     {
         $model = new NewPlatformModel(

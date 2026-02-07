@@ -10,6 +10,9 @@ class EntityType
     public const string PLATFORM = 'PLATFORM'; // Plateforme de vente
     public const string CATEGORY = 'CATEGORY'; // Catégorie de produit
     public const string MENU = 'MENU'; // Menu de navigation
+    public const string PRODUCT = 'PRODUCT'; // Produit vendu
+    public const string OPTION_GROUP = 'OPTION_GROUP'; // Groupe d'options de produit
+    public const string OPTION_ITEM = 'OPTION_ITEM'; // Option individuelle de produit
 
     public static function getAll(): array
     {
@@ -26,6 +29,9 @@ class EntityType
                 self::PLATFORM,
                 self::CATEGORY,
                 self::MENU,
+                self::PRODUCT,
+                self::OPTION_GROUP,
+                self::OPTION_ITEM,
             ]
         ];
     }

@@ -13,6 +13,9 @@ class CreateCategoryProcessor implements ProcessorInterface
     {
     }
 
+    /**
+     * @param \App\Dto\CreateCategoryDto $data 
+     */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
     {
         $model = new NewCategoryModel(

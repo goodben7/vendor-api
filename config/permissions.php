@@ -39,4 +39,19 @@ return static function (): iterable {
     yield Permission::new('ROLE_CATEGORY_UPDATE', "Modifier une catégorie");
     yield Permission::new('ROLE_CATEGORY_DETAILS', "Consulter les détails d'une catégorie");
 
+    yield Permission::new('ROLE_PRODUCT_CREATE', "Créer un produit");
+    yield Permission::new('ROLE_PRODUCT_LIST', "Consulter la liste des produits");
+    yield Permission::new('ROLE_PRODUCT_UPDATE', "Modifier un produit");
+    yield Permission::new('ROLE_PRODUCT_DETAILS', "Consulter les détails d'un produit");
+
+    yield Permission::new('ROLE_OPTION_GROUP_CREATE', "Créer un groupe d'options");
+    yield Permission::new('ROLE_OPTION_GROUP_LIST', "Consulter la liste des groupes d'options");
+    yield Permission::new('ROLE_OPTION_GROUP_UPDATE', "Modifier un groupe d'options");
+    yield Permission::new('ROLE_OPTION_GROUP_DETAILS', "Consulter les détails d'un groupe d'options");
+
+    yield Permission::new('ROLE_OPTION_ITEM_CREATE', "Créer une option");
+    yield Permission::new('ROLE_OPTION_ITEM_LIST', "Consulter la liste des options");
+    yield Permission::new('ROLE_OPTION_ITEM_UPDATE', "Modifier une option");
+    yield Permission::new('ROLE_OPTION_ITEM_DETAILS', "Consulter les détails d'une option");
+
 };

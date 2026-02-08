@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 use App\Entity\Menu;
 use App\Entity\User;
-use App\Entity\Product;
+use App\Entity\Tablet;
 
+use App\Entity\Product;
 use App\Entity\Profile;
 use App\Entity\Category;
 use App\Entity\Platform;
 use App\Model\Ressource;
 use App\Entity\OptionItem;
 use App\Entity\OptionGroup;
+use App\Entity\PlatformTable;
 
 return static function (): iterable {
 
@@ -23,5 +25,7 @@ return static function (): iterable {
     yield Ressource::new("product", Product::class, "PD", true);
     yield Ressource::new("option_item", OptionItem::class, "OI", true);
     yield Ressource::new("option_group", OptionGroup::class, "OG", true);
+    yield Ressource::new("platform_table", PlatformTable::class, "PT", true);
+    yield Ressource::new("tablet", Tablet::class, "TB", true);
 
 };

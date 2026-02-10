@@ -20,6 +20,7 @@ class EntityType
     public const string ORDER_ITEM_OPTION = 'ORDER_ITEM_OPTION';
     public const string ACTIVITY = 'ACTIVITY';
     public const string DOCUMENT = 'DOCUMENT';
+    public const string PAYMENT = 'PAYMENT';
 
     public static function getAll(): array
     {
@@ -45,7 +46,8 @@ class EntityType
                 self::ORDER_ITEM,
                 self::ORDER_ITEM_OPTION,
                 self::ACTIVITY,
-                self::DOCUMENT
+                self::DOCUMENT,
+                self::PAYMENT
             ]
         ];
     }

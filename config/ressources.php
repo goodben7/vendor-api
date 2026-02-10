@@ -6,9 +6,10 @@ use App\Entity\Menu;
 use App\Entity\User;
 use App\Entity\Order;
 use App\Entity\Tablet;
+use App\Entity\Payment;
 use App\Entity\Product;
-use App\Entity\Profile;
 
+use App\Entity\Profile;
 use App\Entity\Category;
 use App\Entity\Document;
 use App\Entity\Platform;
@@ -35,4 +36,5 @@ return static function (): iterable {
     yield Ressource::new("order_item", OrderItem::class, "OE", true);
     yield Ressource::new("order_item_option", OrderItemOption::class, "OO", true);
     yield Ressource::new("document", Document::class, "DC", true);
+    yield Ressource::new("payment", Payment::class, "PA", true);
 };

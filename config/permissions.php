@@ -84,4 +84,8 @@ return static function (): iterable {
     yield Permission::new('ROLE_DOC_LIST', "Consulter la liste des documents");
     yield Permission::new('ROLE_DOC_DETAILS', "Consulter les détails d'un document");
     yield Permission::new('ROLE_DOC_DELETE', "Supprimer un document");
+
+    yield Permission::new('ROLE_PAYMENT_DETAILS', "Consulter les détails d'un paiement");
+    yield Permission::new('ROLE_PAYMENT_LIST', "Consulter la liste des paiements");
+    yield Permission::new('ROLE_PAYMENT_CREATE', "Créer un paiement");
 };

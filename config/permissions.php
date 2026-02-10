@@ -64,4 +64,19 @@ return static function (): iterable {
     yield Permission::new('ROLE_TABLET_UPDATE', "Modifier une tablette");
     yield Permission::new('ROLE_TABLET_DETAILS', "Consulter les détails d'une tablette");
 
+    yield Permission::new('ROLE_ORDER_DETAILS', "Consulter les détails d'une commande");
+    yield Permission::new('ROLE_ORDER_LIST', "Consulter la liste des commandes");
+    yield Permission::new('ROLE_ORDER_CREATE', "Créer une commande");
+    yield Permission::new('ROLE_ORDER_SENT_TO_KITCHEN', "Marquer une commande comme envoyée en cuisine");
+    yield Permission::new('ROLE_ORDER_AS_READY', "Marquer une commande comme prête");
+    yield Permission::new('ROLE_ORDER_AS_SERVED', "Marquer une commande comme servie");
+    yield Permission::new('ROLE_ORDER_AS_CANCELLED', "Annuler une commande");
+
+    yield Permission::new('ROLE_ORDER_ITEM_DETAILS', "Consulter les détails d'un article de commande");
+    yield Permission::new('ROLE_ORDER_ITEM_LIST', "Consulter la liste des articles de commande");
+    yield Permission::new('ROLE_ORDER_ITEM_CREATE', "Créer un article de commande");
+
+    yield Permission::new('ROLE_ORDER_ITEM_OPTION_DETAILS', "Consulter les détails d'une option d'article de commande");
+    yield Permission::new('ROLE_ORDER_ITEM_OPTION_LIST', "Consulter la liste des options d'article de commande");
+    yield Permission::new('ROLE_ORDER_ITEM_OPTION_CREATE', "Créer une option d'article de commande");
 };

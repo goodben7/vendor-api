@@ -15,6 +15,9 @@ class EntityType
     public const string OPTION_ITEM = 'OPTION_ITEM'; // Option individuelle de produit
     public const string PLATFORM_TABLE = 'PLATFORM_TABLE';
     public const string TABLET = 'TABLET';
+    public const string ORDER = 'ORDER';
+    public const string ORDER_ITEM = 'ORDER_ITEM';
+    public const string ORDER_ITEM_OPTION = 'ORDER_ITEM_OPTION';
     public const string ACTIVITY = 'ACTIVITY';
 
     public static function getAll(): array
@@ -37,6 +40,9 @@ class EntityType
                 self::OPTION_ITEM,
                 self::PLATFORM_TABLE,
                 self::TABLET,
+                self::ORDER,
+                self::ORDER_ITEM,
+                self::ORDER_ITEM_OPTION,
                 self::ACTIVITY,
             ]
         ];

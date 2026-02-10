@@ -11,6 +11,11 @@ class ActivityEvent extends Event {
     public const  string ACTION_LIST = 'listed';
     public const  string ACTION_EDIT = 'edited';
     public const  string ACTION_DELETE = 'deleted';
+    public const string ACTION_SENT_TO_KITCHEN= 'sent_to_kitchen';
+    public const string ACTION_READY= 'ready';
+    public const string ACTION_SERVED = 'served';
+    public const string ACTION_CANCELLED = 'cancelled';
+    public const string ACTION_PAID = 'paid';
 
     private ?string $ressourceClass;
     private ?string $activityDescription;

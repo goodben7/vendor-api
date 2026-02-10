@@ -5,6 +5,9 @@ declare(strict_types=1);
 use App\Entity\Menu;
 use App\Entity\User;
 use App\Entity\Tablet;
+use App\Entity\Order;
+use App\Entity\OrderItem;
+use App\Entity\OrderItemOption;
 
 use App\Entity\Product;
 use App\Entity\Profile;
@@ -27,5 +30,7 @@ return static function (): iterable {
     yield Ressource::new("option_group", OptionGroup::class, "OG", true);
     yield Ressource::new("platform_table", PlatformTable::class, "PT", true);
     yield Ressource::new("tablet", Tablet::class, "TB", true);
-
+    yield Ressource::new("order", Order::class, "OR", true);
+    yield Ressource::new("order_item", OrderItem::class, "OE", true);
+    yield Ressource::new("order_item_option", OrderItemOption::class, "OO", true);
 };

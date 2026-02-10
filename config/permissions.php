@@ -79,4 +79,9 @@ return static function (): iterable {
     yield Permission::new('ROLE_ORDER_ITEM_OPTION_DETAILS', "Consulter les détails d'une option d'article de commande");
     yield Permission::new('ROLE_ORDER_ITEM_OPTION_LIST', "Consulter la liste des options d'article de commande");
     yield Permission::new('ROLE_ORDER_ITEM_OPTION_CREATE', "Créer une option d'article de commande");
+
+    yield Permission::new('ROLE_DOC_CREATE', "Créer un document");
+    yield Permission::new('ROLE_DOC_LIST', "Consulter la liste des documents");
+    yield Permission::new('ROLE_DOC_DETAILS', "Consulter les détails d'un document");
+    yield Permission::new('ROLE_DOC_DELETE', "Supprimer un document");
 };

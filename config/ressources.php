@@ -4,19 +4,20 @@ declare(strict_types=1);
 
 use App\Entity\Menu;
 use App\Entity\User;
-use App\Entity\Tablet;
 use App\Entity\Order;
-use App\Entity\OrderItem;
-use App\Entity\OrderItemOption;
-
+use App\Entity\Tablet;
 use App\Entity\Product;
 use App\Entity\Profile;
+
 use App\Entity\Category;
+use App\Entity\Document;
 use App\Entity\Platform;
 use App\Model\Ressource;
+use App\Entity\OrderItem;
 use App\Entity\OptionItem;
 use App\Entity\OptionGroup;
 use App\Entity\PlatformTable;
+use App\Entity\OrderItemOption;
 
 return static function (): iterable {
 
@@ -33,4 +34,5 @@ return static function (): iterable {
     yield Ressource::new("order", Order::class, "OR", true);
     yield Ressource::new("order_item", OrderItem::class, "OE", true);
     yield Ressource::new("order_item_option", OrderItemOption::class, "OO", true);
+    yield Ressource::new("document", Document::class, "DC", true);
 };

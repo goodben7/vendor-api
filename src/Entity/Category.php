@@ -59,7 +59,7 @@ class Category implements RessourceInterface
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(IdGenerator::class)]
     #[ORM\Column(name: 'CT_ID', length: 16)]
-    #[Groups(['category:get'])]
+    #[Groups(['category:get', 'product:get'])]
     private ?string $id = null;
 
     #[ORM\ManyToOne]
@@ -68,7 +68,7 @@ class Category implements RessourceInterface
     private ?Menu $menu = null;
 
     #[ORM\Column(name: 'CT_LABEL', length: 120)]
-    #[Groups(['category:get'])]
+    #[Groups(['category:get', 'product:get'])]
     private ?string $label = null;
 
     #[ORM\Column(name: 'CT_POSITION')]

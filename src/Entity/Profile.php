@@ -65,11 +65,11 @@ class Profile implements RessourceInterface
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(IdGenerator::class)]
     #[ORM\Column(name: 'PR_ID', length: 16)]
-    #[Groups(['profile:get'])]
+    #[Groups(['profile:get', 'user:get'])]
     private ?string $id = null;
 
     #[ORM\Column(name: 'PR_LABEL', length: 120)]
-    #[Groups(['profile:get', 'profile:post', 'profile:patch'])]
+    #[Groups(['profile:get', 'profile:post', 'profile:patch', 'user:get'])]
     private ?string $label = null;
 
     #[ORM\Column(name: 'PR_PERSON_TYPE', length: 15)]

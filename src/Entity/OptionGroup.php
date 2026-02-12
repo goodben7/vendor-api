@@ -63,7 +63,7 @@ class OptionGroup implements RessourceInterface
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(IdGenerator::class)]
     #[ORM\Column(name: 'OG_ID', length: 16)]
-    #[Groups(['option_group:get'])]
+    #[Groups(['option_group:get', 'product:get'])]
     private ?string $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'optionGroups')]
@@ -72,15 +72,15 @@ class OptionGroup implements RessourceInterface
     private ?Product $product = null;
 
     #[ORM\Column(name: 'OG_LABEL', length: 120)]
-    #[Groups(['option_group:get', 'option_group:post', 'option_group:patch'])]
+    #[Groups(['option_group:get', 'option_group:post', 'option_group:patch', 'product:get'])]
     private ?string $label = null;
 
     #[ORM\Column(name: 'OG_IS_REQUIRED')]
-    #[Groups(['option_group:get', 'option_group:post', 'option_group:patch'])]
+    #[Groups(['option_group:get', 'option_group:post', 'option_group:patch', 'product:get'])]
     private ?bool $isRequired = null;
 
     #[ORM\Column(name: 'OG_MAX_CHOICES')]
-    #[Groups(['option_group:get', 'option_group:post', 'option_group:patch'])]
+    #[Groups(['option_group:get', 'option_group:post', 'option_group:patch', 'product:get'])]
     private ?int $maxChoices = null;
 
     #[ORM\Column(name: 'OG_IS_AVAILABLE')]

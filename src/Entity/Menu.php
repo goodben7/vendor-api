@@ -55,11 +55,11 @@ class Menu implements RessourceInterface
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(IdGenerator::class)]
     #[ORM\Column(name: 'MN_ID', length: 16)]
-    #[Groups(['menu:get'])]
+    #[Groups(['menu:get', 'category:get'])]
     private ?string $id = null;
 
     #[ORM\Column(name: 'MN_LABEL', length: 120)]
-    #[Groups(['menu:get', 'menu:post', 'menu:patch'])]
+    #[Groups(['menu:get', 'menu:post', 'menu:patch', 'category:get'])]
     private ?string $label = null;
 
     #[ORM\Column(name: 'MN_ACTIVE')]

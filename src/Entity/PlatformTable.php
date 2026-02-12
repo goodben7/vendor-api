@@ -57,11 +57,11 @@ class PlatformTable implements RessourceInterface
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(IdGenerator::class)]
     #[ORM\Column(name: 'PT_ID', length: 16)]
-    #[Groups(['platform_table:get'])]
+    #[Groups(['platform_table:get', 'tablet:get'])]
     private ?string $id = null;
 
     #[ORM\Column(name: 'PT_LABEL', length: 120)]
-    #[Groups(['platform_table:get'])]
+    #[Groups(['platform_table:get', 'tablet:get'])]
     private ?string $label = null;
 
     #[ORM\Column(name: 'PT_ACTIVE')]

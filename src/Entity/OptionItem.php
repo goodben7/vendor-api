@@ -56,7 +56,7 @@ class OptionItem implements RessourceInterface
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(IdGenerator::class)]
     #[ORM\Column(name: 'OI_ID', length: 16)]
-    #[Groups(['option_item:get'])]
+    #[Groups(['option_item:get', 'product:get', 'option_group:get', 'order:get'])]
     private ?string $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'optionItems')]
@@ -65,11 +65,11 @@ class OptionItem implements RessourceInterface
     private ?OptionGroup $optionGroup = null;
 
     #[ORM\Column(name: 'OI_LABEL', length: 120)]
-    #[Groups(['option_item:get', 'option_item:post', 'option_item:patch'])]
+    #[Groups(['option_item:get', 'option_item:post', 'option_item:patch', 'product:get', 'option_group:get', 'order:get'])]
     private ?string $label = null;
 
     #[ORM\Column(name: 'OI_PRICE_DELTA', type: Types::DECIMAL, precision: 17, scale: 2)]
-    #[Groups(['option_item:get', 'option_item:post', 'option_item:patch'])]
+    #[Groups(['option_item:get', 'option_item:post', 'option_item:patch', 'product:get', 'option_group:get', 'order:get'])]
     private ?string $priceDelta = null;
 
     #[ORM\Column(name: 'OI_CREATED_AT')]

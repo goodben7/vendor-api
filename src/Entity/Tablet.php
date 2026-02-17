@@ -59,7 +59,7 @@ class Tablet implements RessourceInterface
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(IdGenerator::class)]
     #[ORM\Column(name: 'TB_ID', length: 16)]
-    #[Groups(['tablet:get'])]
+    #[Groups(['tablet:get', 'order:get'])]
     private ?string $id = null;
 
     #[ORM\ManyToOne()]
@@ -68,11 +68,11 @@ class Tablet implements RessourceInterface
     private ?PlatformTable $platformTable = null;
 
     #[ORM\Column(name: 'TB_LABEL', length: 255, nullable: true)]
-    #[Groups(['tablet:get'])]
+    #[Groups(['tablet:get', 'order:get'])]
     private ?string $label = null;
 
     #[ORM\Column(name: 'TB_DEVICE_ID', length: 255, nullable: true)]
-    #[Groups(['tablet:get'])]
+    #[Groups(['tablet:get', 'order:get'])]
     private ?string $deviceId = null;
 
     #[ORM\Column(name: 'TB_LAST_HEARTBEAT', nullable: true)]
@@ -80,7 +80,7 @@ class Tablet implements RessourceInterface
     private ?\DateTimeImmutable $lastHeartbeat = null;
 
     #[ORM\Column(name: 'TB_ACTIVE')]
-    #[Groups(['tablet:get'])]
+    #[Groups(['tablet:get', 'order:get'])]
     private ?bool $active = null;
 
     #[ORM\Column(name: 'TB_CREATED_AT')]

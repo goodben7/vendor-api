@@ -63,7 +63,7 @@ class OptionGroup implements RessourceInterface
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(IdGenerator::class)]
     #[ORM\Column(name: 'OG_ID', length: 16)]
-    #[Groups(['option_group:get', 'product:get'])]
+    #[Groups(['option_group:get', 'product:get', 'order:get'])]
     private ?string $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'optionGroups')]
@@ -72,7 +72,7 @@ class OptionGroup implements RessourceInterface
     private ?Product $product = null;
 
     #[ORM\Column(name: 'OG_LABEL', length: 120)]
-    #[Groups(['option_group:get', 'option_group:post', 'option_group:patch', 'product:get'])]
+    #[Groups(['option_group:get', 'option_group:post', 'option_group:patch', 'product:get', 'order:get'])]
     private ?string $label = null;
 
     #[ORM\Column(name: 'OG_IS_REQUIRED')]
@@ -84,7 +84,7 @@ class OptionGroup implements RessourceInterface
     private ?int $maxChoices = null;
 
     #[ORM\Column(name: 'OG_IS_AVAILABLE')]
-    #[Groups(['option_group:get', 'option_group:post', 'option_group:patch'])]
+    #[Groups(['option_group:get', 'option_group:post', 'option_group:patch', 'product:get'])]
     private ?bool $isAvailable = null;
 
     #[ORM\Column(name: 'OG_CREATED_AT')]
@@ -99,7 +99,7 @@ class OptionGroup implements RessourceInterface
      * @var Collection<int, OptionItem>
      */
     #[ORM\OneToMany(mappedBy: 'optionGroup', targetEntity: OptionItem::class, cascade: ['all'])]
-    #[Groups(['option_group:get'])]
+    #[Groups(['option_group:get', 'product:get', 'order:get'])]
     private Collection $optionItems;
     
     public function __construct()
@@ -223,5 +223,21 @@ class OptionGroup implements RessourceInterface
     public function buildCreatedAt(): void
     {
         $this->createdAt = new \DateTimeImmutable();
+    }
+
+    /**
+     * Get the value of isAvailable
+     */ 
+    public function getIsAvailable(): bool|null
+    {
+        return $this->isAvailable;
+    }
+
+    /**
+     * Get the value of isRequired
+     */ 
+    public function getIsRequired(): bool|null
+    {
+        return $this->isRequired;
     }
 }

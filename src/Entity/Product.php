@@ -62,7 +62,7 @@ class Product implements RessourceInterface
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(IdGenerator::class)]
     #[ORM\Column(name: 'PD_ID', length: 16)]
-    #[Groups(['product:get'])]
+    #[Groups(['product:get', 'option_group:get', 'order:get'])]
     private ?string $id = null;
 
     #[ORM\ManyToOne]
@@ -71,7 +71,7 @@ class Product implements RessourceInterface
     private ?Category $category = null;
 
     #[ORM\Column(name: 'PD_LABEL', length: 120)]
-    #[Groups(['product:get'])]  
+    #[Groups(['product:get', 'option_group:get', 'order:get'])]  
     private ?string $label = null;
 
     #[ORM\Column(name: 'PD_DESCRIPTION', length: 255, nullable: true)]
@@ -79,7 +79,7 @@ class Product implements RessourceInterface
     private ?string $description = null;
 
     #[ORM\Column(name: 'PD_BASE_PRICE', type: Types::DECIMAL, precision: 17, scale: 2)]
-    #[Groups(['product:get'])]
+    #[Groups(['product:get', 'option_group:get', 'order:get'])]
     private ?string $basePrice = null;
 
     #[ORM\Column(name: 'PD_IS_AVAILABLE')]
@@ -98,7 +98,7 @@ class Product implements RessourceInterface
      * @var Collection<int, OptionGroup>
      */
     #[ORM\OneToMany(mappedBy: 'product', targetEntity: OptionGroup::class, cascade: ['all'])]
-    #[Groups(['product:get'])]
+    #[Groups(['product:get', 'order:get'])]
     private Collection $optionGroups;
 
     public function __construct()
@@ -210,5 +210,13 @@ class Product implements RessourceInterface
             }
         }
         return $this;
+    }
+
+    /**
+     * Get the value of isAvailable
+     */ 
+    public function getIsAvailable(): bool|null
+    {
+        return $this->isAvailable;
     }
 }

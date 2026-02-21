@@ -10,11 +10,14 @@ use App\Doctrine\IdGenerator;
 use ApiPlatform\Metadata\Post;
 use App\Dto\ChangePasswordDto;
 use App\Dto\SetUserProfileDto;
+use Doctrine\DBAL\Types\Types;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Delete;
+use App\Dto\AddUserSideRolesDto;
 use Doctrine\ORM\Mapping as ORM;
+use App\Dto\CreateAdminAccessDto;
+use App\Model\RessourceInterface;
 use App\Model\UserProxyIntertace;
-use Doctrine\DBAL\Types\Types;
 use App\Manager\PermissionManager;
 use App\Repository\UserRepository;
 use App\State\CreateUserProcessor;
@@ -25,16 +28,17 @@ use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\State\ToggleLockUserProcessor;
 use ApiPlatform\Metadata\GetCollection;
-use App\State\ChangeUserPasswordProcessor;
-use App\Dto\AddUserSideRolesDto;
 use App\State\AddUserSideRolesProcessor;
+use App\State\CreateAdminAccessProcessor;
+use App\Contract\PlatformCentricInterface;
+use App\State\ChangeUserPasswordProcessor;
+use App\Contract\PlatformRestrictiveInterface;
 use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
 use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\State\ItemProvider;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use Symfony\Component\Serializer\Attribute\Groups;
 use ApiPlatform\Doctrine\Orm\State\CollectionProvider;
-use App\Model\RessourceInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -97,7 +101,14 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             input: AddUserSideRolesDto::class,
             processor: AddUserSideRolesProcessor::class,  
             status: 200,
-        )
+        ),
+        new Post(
+            uriTemplate: "users/{id}/admin_access",
+            security: 'is_granted("ROLE_ADMIN_ACCESS_CREATE")',
+            input: CreateAdminAccessDto::class,
+            processor: CreateAdminAccessProcessor::class,
+            status: 201,
+        ),
     ]
 )]
 #[ApiFilter(SearchFilter::class, properties: [
@@ -113,10 +124,11 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
     'mustChangePassword' => 'exact',
     'holderId' => 'exact',
     "holderType" => 'exact',
+    "platformId" => 'exact',
 ])]
 #[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt'])]
 #[ApiFilter(DateFilter::class, properties: ['createdAt', 'updatedAt'])]
-class User implements UserInterface, PasswordAuthenticatedUserInterface, RessourceInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, RessourceInterface, PlatformRestrictiveInterface, PlatformCentricInterface
 {
     public const string ID_PREFIX = "US";
     
@@ -126,6 +138,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Ressour
     public const string EVENT_USER_CHANGED_PASSWORD = "changed_password";
     public const string EVENT_USER_LOCKED = "locked";
     public const string EVENT_USER_UNLOCKED = "unlocked";
+    public const string EVENT_USER_ADMIN_ACCESS_CREATED = "admin_access_created";
 
     public const string EVENT_USER_SET_PROFILE = "set_profile";
 
@@ -200,6 +213,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Ressour
     #[ORM\Column(name: 'US_SIDE_ROLES', type: Types::SIMPLE_ARRAY, nullable: true)]
     #[Groups(['user:get'])]
     private array $sideRoles = [];
+
+    #[ORM\Column(name: 'US_PLATFORM_ID', length: 16, nullable: true)]
+    #[Groups(['user:get'])]
+    private ?string $platformId = null;
 
     #[ORM\Column(name: 'US_CREATED_AT')]
     #[Groups(['user:get'])]
@@ -564,6 +581,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Ressour
     public function setSideRoles(?array $sideRoles): self
     {
         $this->sideRoles = $sideRoles;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of platformId
+     */ 
+    public function getPlatformId(): string|null
+    {
+        return $this->platformId;
+    }
+
+    /**
+     * Set the value of platformId
+     *
+     * @return  self
+     */ 
+    public function setPlatformId(?string $platformId): static
+    {
+        $this->platformId = $platformId;
 
         return $this;
     }

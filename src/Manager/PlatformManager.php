@@ -25,6 +25,10 @@ class PlatformManager
         $platform->setAddress($model->address);
         $platform->setDescription($model->description);
         $platform->setCurrency($model->currency);
+        $platform->setPhone($model->phone);
+        $platform->setEmail($model->email);
+        $platform->setAllowTableManagement($model->allowTableManagement ?? true);
+        $platform->setAllowOnlineOrder($model->allowOnlineOrder ?? false);
         $platform->setPaymentConfigJson($model->paymentConfigJson);
         $platform->setActive($model->active ?? true);
         $platform->setCreatedAt(new \DateTimeImmutable('now'));
@@ -45,6 +49,14 @@ class PlatformManager
         $platform->setAddress($model->address);
         $platform->setDescription($model->description);
         $platform->setCurrency($model->currency);
+        $platform->setPhone($model->phone);
+        $platform->setEmail($model->email);
+        if ($model->allowTableManagement !== null) {
+            $platform->setAllowTableManagement($model->allowTableManagement);
+        }
+        if ($model->allowOnlineOrder !== null) {
+            $platform->setAllowOnlineOrder($model->allowOnlineOrder);
+        }
         $platform->setPaymentConfigJson($model->paymentConfigJson);
         if ($model->active !== null) {
             $platform->setActive($model->active);

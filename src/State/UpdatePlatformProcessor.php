@@ -23,6 +23,10 @@ class UpdatePlatformProcessor implements ProcessorInterface
             $data->address,
             $data->description,
             $data->currency,
+            $data->phone,
+            $data->email,
+            $data->allowTableManagement,
+            $data->allowOnlineOrder,
             $data->paymentConfigJson,
             $data->active
         );

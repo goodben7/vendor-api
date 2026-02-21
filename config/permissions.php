@@ -15,6 +15,9 @@ return static function (): iterable {
     yield Permission::new('ROLE_USER_DELETE', "Supprimer un utilisateur");
     yield Permission::new('ROLE_USER_SET_PROFILE', "Modifier le profil utilisateur");
     yield Permission::new('ROLE_USER_ADD_SIDE_ROLES', "Ajouter des droits supplémentaires à un utilisateur");
+    yield Permission::new('ROLE_ADMIN_ACCESS_CREATE', "Créer un accès administrateur");
+
+
 
     yield Permission::new('ROLE_PROFILE_CREATE', "Créer un profil utilisateur");
     yield Permission::new('ROLE_PROFILE_LIST', "Consulter la liste des profils utilisateur");

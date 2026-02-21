@@ -6,13 +6,15 @@ use App\Entity\User;
 use App\Entity\Profile;
 use App\Model\NewUserModel;
 use App\Model\UpdateUserModel;
+use App\Manager\PermissionManager;
+use App\Model\NewAdminAccessModel;
 use App\Service\ActivityEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Exception\UnavailableDataException;
 use App\Exception\InvalidActionInputException;
 use App\Exception\UnauthorizedActionException;
+use App\Model\UserProxyIntertace;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use App\Manager\PermissionManager;
 
 
 class UserManager
@@ -211,6 +213,34 @@ class UserManager
 
         $this->em->persist($user);
         $this->em->flush();
+
+        return $user;
+    }
+
+    public function createAdminAccess(NewAdminAccessModel $model): User {
+
+        if ($model->profile->getPersonType() !== UserProxyIntertace::PERSON_ADMIN) {
+            throw new InvalidActionInputException('Invalid profile: Person type must be ADMIN');
+        }
+
+        $user = new User();
+
+        $user->setEmail($model->email);
+        $user->setCreatedAt(new \DateTimeImmutable('now'));
+        $user->setPlainPassword($model->plainPassword);
+        $user->setPassword($this->hasher->hashPassword($user, $model->plainPassword));
+        $user->setPhone($model->phone);
+        $user->setDisplayName($model->displayName);
+        $user->setProfile($model->profile);
+        $user->setPlatformId($model->platformId);
+        $user->setPersonType($model->profile->getPersonType());
+        $user->setHolderId($model->holderId);
+        $user->setHolderType($model->holderType);
+
+        $this->em->persist($user);
+        $this->em->flush();
+
+        $this->eventDispatcher->dispatch($user, User::EVENT_USER_ADMIN_ACCESS_CREATED);
 
         return $user;
     }

@@ -10,15 +10,16 @@ use App\Dto\UpdatePlatformDto;
 use Doctrine\DBAL\Types\Types;
 use ApiPlatform\Metadata\Patch;
 use Doctrine\ORM\Mapping as ORM;
+use App\Model\RessourceInterface;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\PlatformRepository;
 use App\State\CreatePlatformProcessor;
 use App\State\UpdatePlatformProcessor;
 use ApiPlatform\Metadata\GetCollection;
+use App\Contract\PlatformRestrictiveInterface;
 use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
-use App\Model\RessourceInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: PlatformRepository::class)]
@@ -51,7 +52,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
     'active' => 'exact'
 ])]
 #[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt'])]
-class Platform implements RessourceInterface
+class Platform implements RessourceInterface, PlatformRestrictiveInterface
 {
     public const string ID_PREFIX = "PL";
 
@@ -78,6 +79,22 @@ class Platform implements RessourceInterface
     #[Groups(['platform:get'])]
     private ?string $currency = null;
 
+    #[ORM\Column(name: 'PL_PHONE', length: 30, nullable: true)]
+    #[Groups(['platform:get'])]
+    private ?string $phone = null;
+
+    #[ORM\Column(name: 'PL_EMAIL', length: 180, nullable: true)]
+    #[Groups(['platform:get'])]
+    private ?string $email = null;
+
+    #[ORM\Column(name: 'PL_ALLOW_TABLE_MANAGEMENT', options: ['default' => true])]
+    #[Groups(['platform:get'])]
+    private ?bool $allowTableManagement = true;
+
+    #[ORM\Column(name: 'PL_ALLOW_ONLINE_ORDER', options: ['default' => false])]
+    #[Groups(['platform:get'])]
+    private ?bool $allowOnlineOrder = false;
+
     #[ORM\Column(name: 'PL_PAYMENT_CONFIG', type: Types::JSON, nullable: true)]
     #[Groups(['platform:get'])] 
     private ?array $paymentConfigJson = null;
@@ -95,6 +112,11 @@ class Platform implements RessourceInterface
     private ?\DateTimeImmutable $updatedAt = null;
 
     public function getId(): ?string
+    {
+        return $this->id;
+    }
+
+    public function getPlatformId(): string|null
     {
         return $this->id;
     }
@@ -143,6 +165,28 @@ class Platform implements RessourceInterface
         return $this;
     }
 
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): static
+    {
+        $this->phone = $phone;
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(?string $email): static
+    {
+        $this->email = $email;
+        return $this;
+    }
+
     public function getPaymentConfigJson(): ?array
     {
         return $this->paymentConfigJson;
@@ -151,6 +195,28 @@ class Platform implements RessourceInterface
     public function setPaymentConfigJson(?array $config): static
     {
         $this->paymentConfigJson = $config;
+        return $this;
+    }
+
+    public function isAllowTableManagement(): ?bool
+    {
+        return $this->allowTableManagement;
+    }
+
+    public function setAllowTableManagement(?bool $allowTableManagement): static
+    {
+        $this->allowTableManagement = $allowTableManagement;
+        return $this;
+    }
+
+    public function isAllowOnlineOrder(): ?bool
+    {
+        return $this->allowOnlineOrder;
+    }
+
+    public function setAllowOnlineOrder(?bool $allowOnlineOrder): static
+    {
+        $this->allowOnlineOrder = $allowOnlineOrder;
         return $this;
     }
 

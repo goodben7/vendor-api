@@ -6,19 +6,23 @@ use ApiPlatform\Metadata\Get;
 use App\Doctrine\IdGenerator;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Metadata\ApiFilter;
-use ApiPlatform\Metadata\ApiResource;
-use App\Repository\PlatformTableRepository;
-use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
-use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use App\Model\RessourceInterface;
-use Symfony\Component\Serializer\Attribute\Groups;
+use ApiPlatform\Metadata\ApiFilter;
 use App\Dto\CreatePlatformTableDto;
 use App\Dto\UpdatePlatformTableDto;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use App\Contract\PlatformCentricInterface;
+use App\Repository\PlatformTableRepository;
 use App\State\CreatePlatformTableProcessor;
+use App\State\DeletePlatformTableProcessor;
 use App\State\UpdatePlatformTableProcessor;
+use App\Contract\PlatformRestrictiveInterface;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: PlatformTableRepository::class)]
 #[ORM\Table(name: '`platform_table`')]
@@ -41,17 +45,31 @@ use App\State\UpdatePlatformTableProcessor;
             input: UpdatePlatformTableDto::class,
             processor: UpdatePlatformTableProcessor::class,
         ),
+        new Delete(
+            security:"is_granted('ROLE_PLATFORM_TABLE_DELETE')",
+            processor: DeletePlatformTableProcessor::class
+        ),
     ]
 )]
 #[ApiFilter(SearchFilter::class, properties: [
     'id' => 'exact',
     'label' => 'ipartial',
     'active' => 'exact',
+    'platformId' => 'exact',
+    'capacity' => 'exact',
+    'status' => 'exact',
+    'deleted' => 'exact',
 ])]
 #[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt'])]
-class PlatformTable implements RessourceInterface
+class PlatformTable implements RessourceInterface, PlatformRestrictiveInterface, PlatformCentricInterface
 {
     public const string ID_PREFIX = "PT";
+
+    public const string STATUS_AVAILABLE = 'available';
+    public const string STATUS_OCCUPIED = 'occupied';
+    public const string STATUS_RESERVED = 'reserved';
+    public const string STATUS_CLEANING = 'cleaning';
+    public const string STATUS_OUT_OF_SERVICE = 'out_of_service';
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
@@ -76,6 +94,22 @@ class PlatformTable implements RessourceInterface
     #[Groups(['platform_table:get'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    #[ORM\Column(name: 'PT_PLATFORM_ID', length: 16, nullable: true)]
+    #[Groups(['platform_table:get'])]
+    private ?string $platformId = null;
+
+    #[ORM\Column(name: 'PT_CAPACITY', nullable: true)]
+    #[Groups(['platform_table:get'])]
+    private ?int $capacity = null;
+
+    #[ORM\Column(name: 'PT_STATUS', length: 60, nullable: true, options: ['default' => self::STATUS_AVAILABLE])]
+    #[Groups(['platform_table:get'])]
+    private ?string $status = self::STATUS_AVAILABLE;
+
+    #[ORM\Column(name: 'PT_DELETED', options: ['default' => false])]
+    #[Groups(['platform_table:get'])]
+    private ?bool $deleted = false;
+
     public function getId(): ?string
     {
         return $this->id;
@@ -95,6 +129,17 @@ class PlatformTable implements RessourceInterface
     public function isActive(): ?bool
     {
         return $this->active;
+    }
+
+    public function getPlatformId(): ?string
+    {
+        return $this->platformId;
+    }
+
+    public function setPlatformId(?string $platformId): static
+    {
+        $this->platformId = $platformId;
+        return $this;
     }
 
     public function setActive(bool $active): static
@@ -122,6 +167,48 @@ class PlatformTable implements RessourceInterface
     public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+        return $this;
+    }
+
+    public function getCapacity(): ?int
+    {
+        return $this->capacity;
+    }
+
+    public function setCapacity(?int $capacity): static
+    {
+        $this->capacity = $capacity;
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?string $status): static
+    {
+        $this->status = $status;
+        return $this;
+    }
+
+    /**
+     * Get the value of deleted
+     */ 
+    public function getDeleted(): bool|null
+    {
+        return $this->deleted;
+    }
+
+    /**
+     * Set the value of deleted
+     *
+     * @return  self
+     */ 
+    public function setDeleted(?bool $deleted): static
+    {
+        $this->deleted = $deleted;
+
         return $this;
     }
 }

@@ -21,6 +21,7 @@ class UpdatePlatformTableProcessor implements ProcessorInterface
     {
         $model = new UpdatePlatformTableModel(
             $data->label,
+            $data->capacity,
             $data->active
         );
 

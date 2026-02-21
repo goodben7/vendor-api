@@ -10,6 +10,8 @@ class CreatePlatformTableDto
         #[Assert\Length(max: 120)]
         public ?string $label = null,
 
+        public ?int $capacity = null,
+        
         public ?bool $active = null,
         
     ) {

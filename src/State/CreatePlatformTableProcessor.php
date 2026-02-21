@@ -20,6 +20,7 @@ class CreatePlatformTableProcessor implements ProcessorInterface
     {
         $model = new NewPlatformTableModel(
             $data->label,
+            $data->capacity,
             $data->active
         );
 

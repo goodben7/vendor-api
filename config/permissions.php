@@ -61,6 +61,7 @@ return static function (): iterable {
     yield Permission::new('ROLE_PLATFORM_TABLE_LIST', "Consulter la liste des tables de plateforme");
     yield Permission::new('ROLE_PLATFORM_TABLE_UPDATE', "Modifier une table de plateforme");
     yield Permission::new('ROLE_PLATFORM_TABLE_DETAILS', "Consulter les détails d'une table de plateforme");
+    yield Permission::new('ROLE_PLATFORM_TABLE_DELETE', "Supprimer une table de plateforme"); 
 
     yield Permission::new('ROLE_TABLET_CREATE', "Créer une tablette");
     yield Permission::new('ROLE_TABLET_LIST', "Consulter la liste des tablettes");

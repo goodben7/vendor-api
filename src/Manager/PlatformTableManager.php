@@ -2,26 +2,35 @@
 
 namespace App\Manager;
 
+use App\Event\ActivityEvent;
+use App\Storage\DataStorage;
 use App\Entity\PlatformTable;
 use App\Model\NewPlatformTableModel;
 use App\Model\UpdatePlatformTableModel;
+use App\Service\ActivityEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Exception\UnavailableDataException;
-use App\Event\ActivityEvent;
-use App\Service\ActivityEventDispatcher;
 
 class PlatformTableManager
 {
     public function __construct(
         private EntityManagerInterface $em,
         private ActivityEventDispatcher $eventDispatcher,
+        private DataStorage $dataStorage,
     ) {
     }
 
     public function createFrom(NewPlatformTableModel $model): PlatformTable
     {
+        $platformId = $this->dataStorage->getPlatformId();
+
+        if (null === $platformId) {
+            throw new UnavailableDataException('Platform not found');
+        }
+        
         $table = new PlatformTable();
         $table->setLabel($model->label);
+        $table->setCapacity($model->capacity);
         $table->setActive($model->active ?? true);
         $table->setCreatedAt(new \DateTimeImmutable('now'));
 
@@ -37,6 +46,9 @@ class PlatformTableManager
     {
         $table = $this->findTable($tableId);
         $table->setLabel($model->label);
+        if ($model->capacity !== null) {
+            $table->setCapacity($model->capacity);
+        }
         if ($model->active !== null) {
             $table->setActive($model->active);
         }
@@ -56,5 +68,21 @@ class PlatformTableManager
             throw new UnavailableDataException(sprintf('cannot find platform table with id: %s', $tableId));
         }
         return $table;
+    }
+
+    public function delete(string $tableId): void
+    {
+        $table = $this->findTable($tableId);
+
+        if ($table->getDeleted()) {
+            throw new \InvalidArgumentException('this action is not allowed');
+        }
+
+        $table->setDeleted(true);
+        $table->setUpdatedAt(new \DateTimeImmutable('now'));
+
+        $this->em->flush();
+
+        $this->eventDispatcher->dispatch($table, ActivityEvent::ACTION_DELETE);
     }
 }

@@ -48,8 +48,12 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ApiFilter(SearchFilter::class, properties: [
     'id' => 'exact',
     'name' => 'ipartial',
+    'phone' => 'ipartial',
+    'email' => 'ipartial',
     'currency' => 'exact',
-    'active' => 'exact'
+    'active' => 'exact',
+    'allowTableManagement' => 'exact',
+    'allowOnlineOrder' => 'exact'
 ])]
 #[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt'])]
 class Platform implements RessourceInterface, PlatformRestrictiveInterface

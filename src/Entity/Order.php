@@ -99,7 +99,7 @@ class Order implements RessourceInterface
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(IdGenerator::class)]
     #[ORM\Column(name: 'OR_ID', length: 16)]
-    #[Groups(['order:get'])]
+    #[Groups(['order:get', 'payment:get'])]
     private ?string $id = null;
 
     #[ORM\ManyToOne(targetEntity: PlatformTable::class)]
@@ -113,11 +113,11 @@ class Order implements RessourceInterface
     private ?Tablet $tablet = null;
 
     #[ORM\Column(name: 'OR_REFERENCE_UNIQUE', length: 32, unique: true)]
-    #[Groups(['order:get'])]
+    #[Groups(['order:get', 'payment:get'])]
     private ?string $referenceUnique = null;
 
     #[ORM\Column(name: 'OR_STATUS', length: 255, options: ['default' => self::STATUS_DRAFT])]
-    #[Groups(['order:get'])]
+    #[Groups(['order:get', 'payment:get'])]
     private ?string $status = self::STATUS_DRAFT;
 
     #[ORM\Column(name: 'OR_SENT_TO_KITCHEN_AT', nullable: true)]
@@ -141,7 +141,7 @@ class Order implements RessourceInterface
     private ?string $cancellationReason = null;
 
     #[ORM\Column(name: 'OR_TOTAL_AMOUNT', type: Types::DECIMAL, precision: 17, scale: 2)]
-    #[Groups(['order:get'])]
+    #[Groups(['order:get', 'payment:get'])]
     private ?string $totalAmount = null;
 
     #[ORM\Column(name: 'OR_CREATED_AT')]

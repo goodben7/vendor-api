@@ -67,6 +67,7 @@ return static function (): iterable {
     yield Permission::new('ROLE_TABLET_LIST', "Consulter la liste des tablettes");
     yield Permission::new('ROLE_TABLET_UPDATE', "Modifier une tablette");
     yield Permission::new('ROLE_TABLET_DETAILS', "Consulter les détails d'une tablette");
+    yield Permission::new('ROLE_TABLET_DELETE', "Supprimer une tablette");
 
     yield Permission::new('ROLE_ORDER_DETAILS', "Consulter les détails d'une commande");
     yield Permission::new('ROLE_ORDER_LIST', "Consulter la liste des commandes");

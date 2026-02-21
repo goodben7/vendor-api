@@ -24,6 +24,8 @@ class UpdateTabletProcessor implements ProcessorInterface
             $data->platformTable,
             $data->label,
             $data->deviceId,
+            $data->deviceModel,
+            $data->mode,
             $data->lastHeartbeat,
             $data->active
         );

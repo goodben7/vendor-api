@@ -2,13 +2,13 @@
 
 namespace App\Model;
 
+use App\Entity\Tablet;
 use App\Entity\PlatformTable;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class NewTabletModel
 {
     public function __construct(
-        #[Assert\NotBlank]
         public ?PlatformTable $platformTable = null,
 
         #[Assert\Length(max: 255)]
@@ -16,6 +16,13 @@ class NewTabletModel
 
         #[Assert\Length(max: 255)]
         public ?string $deviceId = null,
+
+        #[Assert\Length(max: 255)]
+        public ?string $deviceModel = null,
+
+        #[Assert\Length(max: 60)]
+        #[Assert\Choice(callback: [Tablet::class, 'getModeAsChoices'])]
+        public ?string $mode = null,
 
         public ?\DateTimeImmutable $lastHeartbeat = null,
 

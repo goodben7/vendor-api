@@ -2,21 +2,23 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\Get;
 use App\Doctrine\IdGenerator;
 use App\Dto\CreatePaymentDto;
+use ApiPlatform\Metadata\Post;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 use App\Model\RessourceInterface;
-use App\Repository\PaymentRepository;
-use App\State\CreatePaymentProcessor;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Get;
+use App\Repository\PaymentRepository;
+use App\State\CreatePaymentProcessor;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Post;
+use App\Contract\PlatformCentricInterface;
+use App\Contract\PlatformRestrictiveInterface;
 use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
 use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: PaymentRepository::class)] 
@@ -43,10 +45,11 @@ use Symfony\Component\Serializer\Attribute\Groups;
     'method' => 'exact',
     'provider' => 'exact',
     'status' => 'exact',
+    'platformId' => 'exact',
 ])]
 #[ApiFilter(OrderFilter::class, properties: ['paidAt', 'createdAt', 'updatedAt'])]
 #[ApiFilter(DateFilter::class, properties: ['paidAt', 'createdAt', 'updatedAt'])]
-class Payment implements RessourceInterface
+class Payment implements RessourceInterface, PlatformRestrictiveInterface, PlatformCentricInterface
 {
     public const string ID_PREFIX = "PA";
 
@@ -99,6 +102,10 @@ class Payment implements RessourceInterface
     #[ORM\Column(name: 'PA_PAID_AT')]
     #[Groups(['payment:get'])]
     private ?\DateTimeImmutable $paidAt = null;
+
+    #[ORM\Column(name: 'PA_PLATFORM_ID', length: 16, nullable: true)]
+    #[Groups(['payment:get'])]
+    private ?string $platformId = null;
 
     #[ORM\Column(name: 'PA_CREATED_AT')]
     #[Groups(['payment:get'])]
@@ -242,5 +249,25 @@ class Payment implements RessourceInterface
             "Espèces" => self::METHOD_CASH,
             "Mobile Money" => self::METHOD_MOBILE_MONEY,
         ];
+    }
+
+    /**
+     * Get the value of platformId
+     */ 
+    public function getPlatformId(): string|null
+    {
+        return $this->platformId;
+    }
+
+    /**
+     * Set the value of platformId
+     *
+     * @return  self
+     */ 
+    public function setPlatformId(?string $platformId): static
+    {
+        $this->platformId = $platformId;
+
+        return $this;
     }
 }

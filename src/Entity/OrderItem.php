@@ -48,7 +48,8 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ApiFilter(SearchFilter::class, properties: [
     'order' => 'exact',
     'product' => 'exact',
-    'itemStatus' => 'exact'
+    'itemStatus' => 'exact',
+    'platformId' => 'exact',
 ])]
 #[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt', 'cookingAt', 'readyAt'])]
 #[ApiFilter(DateFilter::class, properties: ['createdAt', 'updatedAt', 'cookingAt', 'readyAt'])]

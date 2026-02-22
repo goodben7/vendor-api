@@ -7,15 +7,20 @@ use App\Doctrine\IdGenerator;
 use ApiPlatform\Metadata\Post;
 use App\Dto\CreateCategoryDto;
 use App\Dto\UpdateCategoryDto;
+use Doctrine\DBAL\Types\Types;
 use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
 use App\Model\RessourceInterface;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\CategoryRepository;
 use App\State\CreateCategoryProcessor;
+use App\State\DeleteCategoryProcessor;
 use App\State\UpdateCategoryProcessor;
 use ApiPlatform\Metadata\GetCollection;
+use App\Contract\PlatformCentricInterface;
+use App\Contract\PlatformRestrictiveInterface;
 use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -41,6 +46,10 @@ use Symfony\Component\Serializer\Attribute\Groups;
             input: UpdateCategoryDto::class,
             processor: UpdateCategoryProcessor::class,
         ),
+        new Delete(
+            security:"is_granted('ROLE_CATEGORY_DELETE')",
+            processor: DeleteCategoryProcessor::class
+        ),
     ]
 )]
 #[ApiFilter(SearchFilter::class, properties: [
@@ -49,9 +58,11 @@ use Symfony\Component\Serializer\Attribute\Groups;
     'position' => 'exact',
     'active' => 'exact',
     'menu' => 'exact',
+    'platformId' => 'exact',
+    'deleted' => 'exact',
 ])]
 #[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt', 'position'])]
-class Category implements RessourceInterface
+class Category implements RessourceInterface, PlatformRestrictiveInterface, PlatformCentricInterface
 {
     public const string ID_PREFIX = "CT";
 
@@ -71,6 +82,14 @@ class Category implements RessourceInterface
     #[Groups(['category:get', 'product:get'])]
     private ?string $label = null;
 
+    #[ORM\Column(name: 'CT_DESCRIPTION', type: Types::TEXT, nullable: true)]
+    #[Groups(['category:get'])]
+    private ?string $description = null;
+
+    #[ORM\Column(name: 'CT_DELETED', options: ['default' => false])]
+    #[Groups(['category:get'])]
+    private ?bool $deleted = false;
+
     #[ORM\Column(name: 'CT_POSITION')]
     #[Groups(['category:get'])]
     private ?int $position = null;
@@ -78,6 +97,10 @@ class Category implements RessourceInterface
     #[ORM\Column(name: 'CT_ACTIVE')]
     #[Groups(['category:get'])]
     private ?bool $active = null;
+
+    #[ORM\Column(name: 'CT_PLATFORM_ID', length: 16, nullable: true)]
+    #[Groups(['category:get'])]
+    private ?string $platformId = null;
 
     #[ORM\Column(name: 'CT_CREATED_AT')]
     #[Groups(['category:get'])]
@@ -119,6 +142,17 @@ class Category implements RessourceInterface
         return $this->position;
     }
 
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+        return $this;
+    }
+
     public function setPosition(?int $position): static
     {
         $this->position = $position;
@@ -155,6 +189,46 @@ class Category implements RessourceInterface
     public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+        return $this;
+    }
+
+    /**
+     * Get the value of deleted
+     */ 
+    public function getDeleted(): bool|null
+    {
+        return $this->deleted;
+    }
+
+    /**
+     * Set the value of deleted
+     *
+     * @return  self
+     */ 
+    public function setDeleted(?bool $deleted): static
+    {
+        $this->deleted = $deleted;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of platformId
+     */ 
+    public function getPlatformId(): string|null
+    {
+        return $this->platformId;
+    }
+
+    /**
+     * Set the value of platformId
+     *
+     * @return  self
+     */ 
+    public function setPlatformId(?string $platformId): static
+    {
+        $this->platformId = $platformId;
+
         return $this;
     }
 }

@@ -14,6 +14,8 @@ class UpdateCategoryDto
         #[Assert\Length(max: 120)]
         public ?string $label = null,
 
+        public ?string $description = null,
+
         public ?int $position = null,
         
         public ?bool $active = null,

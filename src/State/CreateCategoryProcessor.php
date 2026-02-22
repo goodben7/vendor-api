@@ -21,6 +21,7 @@ class CreateCategoryProcessor implements ProcessorInterface
         $model = new NewCategoryModel(
             $data->menu,
             $data->label,
+            $data->description,
             $data->position,
             $data->active
         );

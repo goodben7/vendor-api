@@ -21,6 +21,7 @@ class UpdateCategoryProcessor implements ProcessorInterface
         $model = new UpdateCategoryModel(
             $data->menu,
             $data->label,
+            $data->description,
             $data->position,
             $data->active
         );

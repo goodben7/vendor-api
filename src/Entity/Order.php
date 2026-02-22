@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Dto\CancelOrderDto;
 use App\Dto\CreateOrderDto;
 use ApiPlatform\Metadata\Get;
 use App\Doctrine\IdGenerator;
@@ -9,25 +10,26 @@ use ApiPlatform\Metadata\Post;
 use Doctrine\DBAL\Types\Types;
 use App\Dto\MarkOrderAsReadyDto;
 use Doctrine\ORM\Mapping as ORM;
+use App\Dto\MarkOrderAsServedDto;
 use App\Model\RessourceInterface;
 use App\Dto\SentToKitchenOrderDto;
 use ApiPlatform\Metadata\ApiFilter;
 use App\Repository\OrderRepository;
+use App\State\CancelOrderProcessor;
 use App\State\CreateOrderProcessor;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use App\State\MarkOrderAsReadyProcessor;
+use App\State\MarkOrderAsServedProcessor;
+use App\Contract\PlatformCentricInterface;
 use App\State\SentToKitchenOrderProcessor;
 use Doctrine\Common\Collections\Collection;
+use App\Contract\PlatformRestrictiveInterface;
 use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
 use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use Doctrine\Common\Collections\ArrayCollection;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use Symfony\Component\Serializer\Attribute\Groups;
-use App\Dto\MarkOrderAsServedDto;
-use App\State\MarkOrderAsServedProcessor;
-use App\Dto\CancelOrderDto;
-use App\State\CancelOrderProcessor;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table(name: '`order`')]
@@ -79,11 +81,12 @@ use App\State\CancelOrderProcessor;
     'platformTable' => 'exact',
     'tablet' => 'exact',
     'referenceUnique' => 'exact',
-    'status' => 'exact'
+    'status' => 'exact',
+    'platformId' => 'exact',
 ])]
 #[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt', 'sentToKitchenAt', 'cancelledAt', 'servedAt', 'readyAt'])]
 #[ApiFilter(DateFilter::class, properties: ['createdAt', 'updatedAt', 'sentToKitchenAt', 'cancelledAt', 'servedAt', 'readyAt'])]
-class Order implements RessourceInterface
+class Order implements RessourceInterface, PlatformRestrictiveInterface, PlatformCentricInterface
 {
     public const string ID_PREFIX = "OR";
 
@@ -143,6 +146,10 @@ class Order implements RessourceInterface
     #[ORM\Column(name: 'OR_TOTAL_AMOUNT', type: Types::DECIMAL, precision: 17, scale: 2)]
     #[Groups(['order:get', 'payment:get'])]
     private ?string $totalAmount = null;
+
+    #[ORM\Column(name: 'OR_PLATFORM_ID', length: 16, nullable: true)]
+    #[Groups(['order:get'])]
+    private ?string $platformId = null;
 
     #[ORM\Column(name: 'OR_CREATED_AT')]
     #[Groups(['order:get'])]
@@ -368,6 +375,26 @@ class Order implements RessourceInterface
     public function setCancellationReason(?string $cancellationReason): static
     {
         $this->cancellationReason = $cancellationReason;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of platformId
+     */ 
+    public function getPlatformId(): string|null
+    {
+        return $this->platformId;
+    }
+
+    /**
+     * Set the value of platformId
+     *
+     * @return  self
+     */ 
+    public function setPlatformId(?string $platformId)
+    {
+        $this->platformId = $platformId;
 
         return $this;
     }

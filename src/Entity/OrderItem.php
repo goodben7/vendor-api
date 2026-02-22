@@ -17,7 +17,9 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\OrderItemRepository;
 use App\State\CreateOrderItemProcessor;
+use App\Contract\PlatformCentricInterface;
 use Doctrine\Common\Collections\Collection;
+use App\Contract\PlatformRestrictiveInterface;
 use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
 use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -50,7 +52,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
 ])]
 #[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt', 'cookingAt', 'readyAt'])]
 #[ApiFilter(DateFilter::class, properties: ['createdAt', 'updatedAt', 'cookingAt', 'readyAt'])]
-class OrderItem implements RessourceInterface
+class OrderItem implements RessourceInterface, PlatformRestrictiveInterface, PlatformCentricInterface
 {
     public const string ID_PREFIX = "OE";
 
@@ -94,6 +96,10 @@ class OrderItem implements RessourceInterface
     #[ORM\Column(name: 'OI_READY_AT', nullable: true)]
     #[Groups(['order_item:get'])]
     private ?\DateTimeImmutable $readyAt = null;
+
+    #[ORM\Column(name: 'OI_PLATFORM_ID', length: 16, nullable: true)]
+    #[Groups(['order_item:get'])]
+    private ?string $platformId = null;
 
     #[ORM\Column(name: 'OI_CREATED_AT')]
     #[Groups(['order_item:get'])]
@@ -258,5 +264,25 @@ class OrderItem implements RessourceInterface
     public function buildCreatedAt(): void
     {
         $this->createdAt = new \DateTimeImmutable();
+    }
+
+    /**
+     * Get the value of platformId
+     */ 
+    public function getPlatformId(): string|null
+    {
+        return $this->platformId;
+    }
+
+    /**
+     * Set the value of platformId
+     *
+     * @return  self
+     */ 
+    public function setPlatformId(?string $platformId): static
+    {
+        $this->platformId = $platformId;
+
+        return $this;
     }
 }

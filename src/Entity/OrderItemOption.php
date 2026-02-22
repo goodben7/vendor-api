@@ -13,8 +13,10 @@ use App\Model\RessourceInterface;
 use ApiPlatform\Metadata\ApiResource;
 use App\Model\NewOrderItemOptionModel;
 use ApiPlatform\Metadata\GetCollection;
+use App\Contract\PlatformCentricInterface;
 use App\Repository\OrderItemOptionRepository;
 use App\State\CreateOrderItemOptionProcessor;
+use App\Contract\PlatformRestrictiveInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: OrderItemOptionRepository::class)]
@@ -36,7 +38,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
         ),
     ]
 )]
-class OrderItemOption implements RessourceInterface
+class OrderItemOption implements RessourceInterface, PlatformRestrictiveInterface, PlatformCentricInterface
 {
     public const string ID_PREFIX = "OO";
 
@@ -60,6 +62,10 @@ class OrderItemOption implements RessourceInterface
     #[ORM\Column(name: 'OO_PRICE_SNAPSHOT', type: Types::DECIMAL, precision: 17, scale: 2)]
     #[Groups(['order_item_option:get', 'order:get'])]
     private ?string $priceSnapshot = null;
+
+    #[ORM\Column(name: 'OO_PLATFORM_ID', length: 16, nullable: true)]
+    #[Groups(['order_item_option:get'])]
+    private ?string $platformId = null;
 
     #[ORM\Column(name: 'OO_CREATED_AT')]
     #[Groups(['order_item_option:get'])]
@@ -139,5 +145,25 @@ class OrderItemOption implements RessourceInterface
     public function buildCreatedAt(): void
     {
         $this->createdAt = new \DateTimeImmutable();
+    }
+
+    /**
+     * Get the value of platformId
+     */ 
+    public function getPlatformId(): string|null
+    {
+        return $this->platformId;
+    }
+
+    /**
+     * Set the value of platformId
+     *
+     * @return  self
+     */ 
+    public function setPlatformId(?string $platformId): static
+    {
+        $this->platformId = $platformId;
+
+        return $this;
     }
 }

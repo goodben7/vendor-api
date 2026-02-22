@@ -6,14 +6,15 @@ use App\Entity\User;
 use App\Entity\Profile;
 use App\Model\NewUserModel;
 use App\Model\UpdateUserModel;
+use App\Model\UserProxyIntertace;
 use App\Manager\PermissionManager;
 use App\Model\NewAdminAccessModel;
+use App\Repository\UserRepository;
 use App\Service\ActivityEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Exception\UnavailableDataException;
 use App\Exception\InvalidActionInputException;
 use App\Exception\UnauthorizedActionException;
-use App\Model\UserProxyIntertace;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 
@@ -23,6 +24,7 @@ class UserManager
         private EntityManagerInterface $em,
         private UserPasswordHasherInterface $hasher,
         private ActivityEventDispatcher $eventDispatcher,
+        private UserRepository $repository,
     ) {  
     }
 
@@ -219,6 +221,10 @@ class UserManager
 
     public function createAdminAccess(NewAdminAccessModel $model): User {
 
+        if ($this->repository->findAdminByPlatformId($model->platformId) !== null) {
+            throw new InvalidActionInputException('Admin account already exists for this platform');
+        }
+
         if ($model->profile->getPersonType() !== UserProxyIntertace::PERSON_ADMIN) {
             throw new InvalidActionInputException('Invalid profile: Person type must be ADMIN');
         }
@@ -236,6 +242,7 @@ class UserManager
         $user->setPersonType($model->profile->getPersonType());
         $user->setHolderId($model->holderId);
         $user->setHolderType($model->holderType);
+        $user->setAdminAccountCreated(true);
 
         $this->em->persist($user);
         $this->em->flush();

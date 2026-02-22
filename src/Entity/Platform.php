@@ -53,7 +53,8 @@ use Symfony\Component\Serializer\Attribute\Groups;
     'currency' => 'exact',
     'active' => 'exact',
     'allowTableManagement' => 'exact',
-    'allowOnlineOrder' => 'exact'
+    'allowOnlineOrder' => 'exact',
+    'adminAccountCreated' => 'exact',
 ])]
 #[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt'])]
 class Platform implements RessourceInterface, PlatformRestrictiveInterface
@@ -106,6 +107,10 @@ class Platform implements RessourceInterface, PlatformRestrictiveInterface
     #[ORM\Column(name: 'PL_ACTIVE')]
     #[Groups(['platform:get'])]
     private ?bool $active = null;
+
+    #[ORM\Column(name: 'PL_ADMIN_ACCOUNT_CREATED', options: ['default' => false])]
+    #[Groups(['platform:get'])]
+    private ?bool $adminAccountCreated = false;
 
     #[ORM\Column(name: 'PL_CREATED_AT')]
     #[Groups(['platform:get'])]
@@ -254,6 +259,26 @@ class Platform implements RessourceInterface, PlatformRestrictiveInterface
     public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+        return $this;
+    }
+
+    /**
+     * Get the value of adminAccountCreated
+     */ 
+    public function getAdminAccountCreated(): bool|null
+    {
+        return $this->adminAccountCreated;
+    }
+
+    /**
+     * Set the value of adminAccountCreated
+     *
+     * @return  self
+     */ 
+    public function setAdminAccountCreated(bool $adminAccountCreated): static
+    {
+        $this->adminAccountCreated = $adminAccountCreated;
+
         return $this;
     }
 }

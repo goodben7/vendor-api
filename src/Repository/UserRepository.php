@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\User;
+use App\Model\UserProxyIntertace;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
@@ -41,6 +42,19 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getQuery()
             ->getOneOrNullResult()
         ; 
+    }
+
+    public function findAdminByPlatformId(string $platformId): ?User
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.personType = :personAdmin')
+            ->andWhere('u.platformId = :platformId')
+            ->setParameter('personAdmin', UserProxyIntertace::PERSON_ADMIN)
+            ->setParameter('platformId', $platformId)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
     }
 
     //    /**

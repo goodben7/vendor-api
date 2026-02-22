@@ -125,6 +125,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
     'holderId' => 'exact',
     "holderType" => 'exact',
     "platformId" => 'exact',
+    'adminAccountCreated' => 'exact',
 ])]
 #[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt'])]
 #[ApiFilter(DateFilter::class, properties: ['createdAt', 'updatedAt'])]
@@ -217,6 +218,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Ressour
     #[ORM\Column(name: 'US_PLATFORM_ID', length: 16, nullable: true)]
     #[Groups(['user:get'])]
     private ?string $platformId = null;
+
+    #[ORM\Column(name: 'US_ADMIN_ACCOUNT_CREATED', options: ['default' => false])]
+    #[Groups(['user:get'])]
+    private ?bool $adminAccountCreated = false;
 
     #[ORM\Column(name: 'US_CREATED_AT')]
     #[Groups(['user:get'])]
@@ -601,6 +606,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Ressour
     public function setPlatformId(?string $platformId): static
     {
         $this->platformId = $platformId;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of adminAccountCreated
+     */ 
+    public function getAdminAccountCreated(): bool|null
+    {
+        return $this->adminAccountCreated;
+    }
+
+    /**
+     * Set the value of adminAccountCreated
+     *
+     * @return  self
+     */ 
+    public function setAdminAccountCreated(?bool $adminAccountCreated): static
+    {
+        $this->adminAccountCreated = $adminAccountCreated;
 
         return $this;
     }

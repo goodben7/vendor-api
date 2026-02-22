@@ -47,6 +47,7 @@ return static function (): iterable {
     yield Permission::new('ROLE_PRODUCT_LIST', "Consulter la liste des produits");
     yield Permission::new('ROLE_PRODUCT_UPDATE', "Modifier un produit");
     yield Permission::new('ROLE_PRODUCT_DETAILS', "Consulter les détails d'un produit");
+    yield Permission::new('ROLE_PRODUCT_DELETE', "Supprimer un produit");
 
     yield Permission::new('ROLE_OPTION_GROUP_CREATE', "Créer un groupe d'options");
     yield Permission::new('ROLE_OPTION_GROUP_LIST', "Consulter la liste des groupes d'options");

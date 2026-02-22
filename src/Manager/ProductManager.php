@@ -3,9 +3,10 @@
 namespace App\Manager;
 
 use App\Entity\Product;
+use App\Event\ActivityEvent;
+use App\Storage\DataStorage;
 use App\Model\NewProductModel;
 use App\Model\UpdateProductModel;
-use App\Event\ActivityEvent;
 use App\Service\ActivityEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Exception\UnavailableDataException;
@@ -15,11 +16,18 @@ class ProductManager
     public function __construct(
         private EntityManagerInterface $em,
         private ActivityEventDispatcher $eventDispatcher,
+        private DataStorage $dataStorage,
     ) {
     }
 
     public function createFrom(NewProductModel $model): Product
     {
+        $platformId = $this->dataStorage->getPlatformId();
+
+        if (null === $platformId) {
+            throw new UnavailableDataException('Platform not found');
+        }
+
         $product = new Product();
         if ($model->category !== null) {
             $product->setCategory($model->category);
@@ -74,5 +82,21 @@ class ProductManager
             throw new UnavailableDataException(sprintf('cannot find product with id: %s', $productId));
         }
         return $product;
+    }
+
+    public function delete(string $productId): void
+    {
+        $product = $this->findProduct($productId);
+
+        if ($product->getDeleted()) {
+            throw new \InvalidArgumentException('this action is not allowed');
+        }
+
+        $product->setDeleted(true);
+        $product->setUpdatedAt(new \DateTimeImmutable('now'));
+
+        $this->em->flush();
+
+        $this->eventDispatcher->dispatch($product, ActivityEvent::ACTION_DELETE);
     }
 }

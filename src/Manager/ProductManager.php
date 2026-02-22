@@ -3,6 +3,7 @@
 namespace App\Manager;
 
 use App\Entity\Product;
+use App\Entity\OptionGroup;
 use App\Event\ActivityEvent;
 use App\Storage\DataStorage;
 use App\Model\NewProductModel;
@@ -67,6 +68,42 @@ class ProductManager
             $product->setIsAvailable($model->isAvailable);
         }
         $product->setUpdatedAt(new \DateTimeImmutable('now'));
+
+        // Synchronize option groups with model (add missing, keep existing, remove absent)
+        // Build current set indexed by id
+        $currentGroups = $product->getOptionGroups();
+        $currentById = [];
+        foreach ($currentGroups as $grp) {
+            if ($grp instanceof OptionGroup && null !== $grp->getId()) {
+                $currentById[$grp->getId()] = $grp;
+            }
+        }
+        // Build desired id set
+        $desiredById = [];
+        foreach ($model->optionGroups as $desired) {
+            if ($desired instanceof OptionGroup && null !== $desired->getId()) {
+                $desiredById[$desired->getId()] = true;
+            }
+        }
+        // Remove groups not present anymore
+        /** @var OptionGroup $grp */
+        foreach ($currentGroups as $grp) {
+            $gid = $grp->getId();
+            if ($gid !== null && !isset($desiredById[$gid])) {
+                $currentGroups->removeElement($grp);
+                $this->em->remove($grp);
+            }
+        }
+        // Add groups that are not already linked
+        foreach ($model->optionGroups as $desired) {
+            if ($desired instanceof OptionGroup) {
+                $gid = $desired->getId();
+                if ($gid === null || !isset($currentById[$gid])) {
+                    $product->addOptionGroup($desired);
+                    $desired->setProduct($product);
+                }
+            }
+        }
 
         $this->em->flush();
 

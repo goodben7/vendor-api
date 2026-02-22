@@ -19,6 +19,10 @@ class UpdateProductModel
         public ?string $basePrice = null,
         
         public ?bool $isAvailable = null,
+
+        #[Assert\Valid()]
+        /** @var array<\App\Entity\OptionGroup> */
+        public array $optionGroups = [],
     ) {
     }
 }

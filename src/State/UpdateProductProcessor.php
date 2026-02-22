@@ -23,7 +23,8 @@ class UpdateProductProcessor implements ProcessorInterface
             $data->label,
             $data->description,
             $data->basePrice,
-            $data->isAvailable
+            $data->isAvailable,
+            $data->optionGroups,
         );
 
         return $this->manager->updateFrom($uriVariables['id'], $model);

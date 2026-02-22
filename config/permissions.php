@@ -36,6 +36,7 @@ return static function (): iterable {
     yield Permission::new('ROLE_MENU_LIST', "Consulter la liste des menus");
     yield Permission::new('ROLE_MENU_UPDATE', "Modifier un menu");
     yield Permission::new('ROLE_MENU_DETAILS', "Consulter les détails d'un menu");
+    yield Permission::new('ROLE_MENU_DELETE', "Supprimer un menu");
 
     yield Permission::new('ROLE_CATEGORY_CREATE', "Créer une catégorie");
     yield Permission::new('ROLE_CATEGORY_LIST', "Consulter la liste des catégories");

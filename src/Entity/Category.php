@@ -62,7 +62,7 @@ class Category implements RessourceInterface
     #[Groups(['category:get', 'product:get'])]
     private ?string $id = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(inversedBy: 'categories')]
     #[ORM\JoinColumn(name: 'CT_MENU', referencedColumnName: 'MN_ID', nullable: false)]
     #[Groups(['category:get'])]
     private ?Menu $menu = null;

@@ -61,6 +61,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
     'status' => 'exact',
     'deviceModel' => 'ipartial',
     'mode' => 'exact',
+    'deleted' => 'exact',
 ])]
 #[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt', 'lastHeartbeat'])]
 class Tablet implements RessourceInterface, PlatformRestrictiveInterface, PlatformCentricInterface

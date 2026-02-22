@@ -5,16 +5,18 @@ namespace App\Entity;
 use ApiPlatform\Metadata\Get;
 use App\Doctrine\IdGenerator;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Patch;
 use Doctrine\DBAL\Types\Types;
+use ApiPlatform\Metadata\Patch;
 use Doctrine\ORM\Mapping as ORM;
+use App\Model\RessourceInterface;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
-use App\Repository\OptionItemRepository;
 use ApiPlatform\Metadata\GetCollection;
+use App\Repository\OptionItemRepository;
+use App\Contract\PlatformCentricInterface;
+use App\Contract\PlatformRestrictiveInterface;
 use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
-use App\Model\RessourceInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
 use ApiPlatform\Doctrine\Common\State\PersistProcessor;
 
@@ -46,9 +48,10 @@ use ApiPlatform\Doctrine\Common\State\PersistProcessor;
     'id' => 'exact',
     'label' => 'ipartial',
     'optionGroup' => 'exact',
+    'platformId' => 'exact',
 ])]
 #[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt', 'priceDelta'])]
-class OptionItem implements RessourceInterface
+class OptionItem implements RessourceInterface, PlatformRestrictiveInterface, PlatformCentricInterface
 {
     public const string ID_PREFIX = "OI";
 
@@ -71,6 +74,10 @@ class OptionItem implements RessourceInterface
     #[ORM\Column(name: 'OI_PRICE_DELTA', type: Types::DECIMAL, precision: 17, scale: 2)]
     #[Groups(['option_item:get', 'option_item:post', 'option_item:patch', 'product:get', 'option_group:get', 'order:get'])]
     private ?string $priceDelta = null;
+
+    #[ORM\Column(name: 'OI_PLATFORM_ID', length: 16, nullable: true)]
+    #[Groups(['option_item:get'])]
+    private ?string $platformId = null;
 
     #[ORM\Column(name: 'OI_CREATED_AT')]
     #[Groups(['option_item:get'])]
@@ -150,5 +157,25 @@ class OptionItem implements RessourceInterface
     public function buildCreatedAt(): void
     {
         $this->createdAt = new \DateTimeImmutable();
+    }
+
+    /**
+     * Get the value of platformId
+     */ 
+    public function getPlatformId(): string|null
+    {
+        return $this->platformId;
+    }
+
+    /**
+     * Set the value of platformId
+     *
+     * @return  self
+     */ 
+    public function setPlatformId(string|null $platformId): static
+    {
+        $this->platformId = $platformId;
+
+        return $this;
     }
 }

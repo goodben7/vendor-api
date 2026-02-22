@@ -23,7 +23,8 @@ class UpdateOptionGroupProcessor implements ProcessorInterface
             $data->label,
             $data->isRequired,
             $data->maxChoices,
-            $data->isAvailable
+            $data->isAvailable,
+            $data->optionItems
         );
 
         return $this->manager->updateFrom($uriVariables['id'], $model);

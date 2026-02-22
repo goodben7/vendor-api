@@ -14,6 +14,9 @@ class UpdateOptionGroupModel
         public ?bool $isRequired = null,
         public ?int $maxChoices = null,
         public ?bool $isAvailable = null,
+        #[Assert\Valid()]
+        /** @var array<\App\Entity\OptionItem> */
+        public array $optionItems = [],
     ) {
     }
 }

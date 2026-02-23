@@ -82,6 +82,8 @@ class Product implements RessourceInterface, AttachmentInterface, PlatformRestri
 {
     public const string ID_PREFIX = "PD";
 
+    public const string EVENT_DELETED = 'product.deleted';
+
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(IdGenerator::class)]

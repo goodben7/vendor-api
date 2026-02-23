@@ -134,6 +134,6 @@ class ProductManager
 
         $this->em->flush();
 
-        $this->eventDispatcher->dispatch($product, ActivityEvent::ACTION_DELETE);
+        $this->eventDispatcher->dispatch($product, Product::EVENT_DELETED);
     }
 }

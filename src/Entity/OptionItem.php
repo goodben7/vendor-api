@@ -7,6 +7,7 @@ use App\Doctrine\IdGenerator;
 use ApiPlatform\Metadata\Post;
 use Doctrine\DBAL\Types\Types;
 use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
 use App\Model\RessourceInterface;
 use ApiPlatform\Metadata\ApiFilter;
@@ -41,6 +42,9 @@ use ApiPlatform\Doctrine\Common\State\PersistProcessor;
             security: 'is_granted("ROLE_OPTION_ITEM_UPDATE")',
             denormalizationContext: ['groups' => 'option_item:patch'],
             processor: PersistProcessor::class,
+        ),
+        new Delete(
+            security:"is_granted('ROLE_OPTION_ITEM_DELETE')",
         ),
     ]
 )]

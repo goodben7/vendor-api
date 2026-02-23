@@ -53,11 +53,13 @@ return static function (): iterable {
     yield Permission::new('ROLE_OPTION_GROUP_LIST', "Consulter la liste des groupes d'options");
     yield Permission::new('ROLE_OPTION_GROUP_UPDATE', "Modifier un groupe d'options");
     yield Permission::new('ROLE_OPTION_GROUP_DETAILS', "Consulter les détails d'un groupe d'options");
+    yield Permission::new('ROLE_OPTION_GROUP_DELETE', "Supprimer un groupe d'options");
 
     yield Permission::new('ROLE_OPTION_ITEM_CREATE', "Créer une option");
     yield Permission::new('ROLE_OPTION_ITEM_LIST', "Consulter la liste des options");
     yield Permission::new('ROLE_OPTION_ITEM_UPDATE', "Modifier une option");
     yield Permission::new('ROLE_OPTION_ITEM_DETAILS', "Consulter les détails d'une option");
+    yield Permission::new('ROLE_OPTION_ITEM_DELETE', "Supprimer une option");
 
     yield Permission::new('ROLE_PLATFORM_TABLE_CREATE', "Créer une table de plateforme");
     yield Permission::new('ROLE_PLATFORM_TABLE_LIST', "Consulter la liste des tables de plateforme");

@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\Get;
 use App\Doctrine\IdGenerator;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
 use App\Dto\CreateOptionGroupDto;
 use App\Dto\UpdateOptionGroupDto;
@@ -46,6 +47,9 @@ use Symfony\Component\Serializer\Attribute\Groups;
             security: 'is_granted("ROLE_OPTION_GROUP_UPDATE")',
             input: UpdateOptionGroupDto::class,
             processor: UpdateOptionGroupProcessor::class,
+        ),
+        new Delete(
+            security:"is_granted('ROLE_OPTION_GROUP_DELETE')",
         ),
     ]
 )]

@@ -7,6 +7,7 @@ use App\Dto\UpdateTabletDto;
 use ApiPlatform\Metadata\Get;
 use App\Doctrine\IdGenerator;
 use ApiPlatform\Metadata\Post;
+use App\Model\RemoveInterface;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
@@ -64,7 +65,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
     'deleted' => 'exact',
 ])]
 #[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt', 'lastHeartbeat'])]
-class Tablet implements RessourceInterface, PlatformRestrictiveInterface, PlatformCentricInterface
+class Tablet implements RessourceInterface, PlatformRestrictiveInterface, PlatformCentricInterface, RemoveInterface
 {
     public const string ID_PREFIX = "TB";
 

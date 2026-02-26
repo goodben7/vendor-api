@@ -19,6 +19,7 @@ use App\Dto\CreateAdminAccessDto;
 use App\Model\RessourceInterface;
 use App\Model\UserProxyIntertace;
 use App\Manager\PermissionManager;
+use App\Provider\UserInfoProvider;
 use App\Repository\UserRepository;
 use App\State\CreateUserProcessor;
 use App\State\DeleteUserProcessor;
@@ -48,6 +49,12 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[ORM\UniqueConstraint(name: 'UNIQ_USER_EMAIL', fields: ['email'])]
 #[ORM\UniqueConstraint(name: 'UNIQ_USER_PHONE', fields: ['phone'])]
 #[ORM\UniqueConstraint(name: 'UNIQ_HOLDER', fields: ['holderId'])]
+#[Get(
+    uriTemplate: 'users/about',
+    security: 'is_granted("ROLE_USER")',
+    normalizationContext: ['groups' => 'user:get'],
+    provider: UserInfoProvider::class,
+)]
 #[ApiResource(
     normalizationContext: ['groups' => 'user:get'], 
     operations:[

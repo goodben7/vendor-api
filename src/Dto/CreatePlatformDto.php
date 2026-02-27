@@ -2,6 +2,7 @@
 
 namespace App\Dto;
 
+use App\Entity\Currency;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class CreatePlatformDto
@@ -14,8 +15,7 @@ class CreatePlatformDto
         
         public ?string $description = null,
 
-        #[Assert\Length(max: 3)]
-        public ?string $currency = null,
+        public ?Currency $currency = null,
 
         #[Assert\Length(max: 30)]
         public ?string $phone = null,

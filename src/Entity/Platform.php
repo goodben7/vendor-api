@@ -80,9 +80,10 @@ class Platform implements RessourceInterface, PlatformRestrictiveInterface
     #[Groups(['platform:get'])]
     private ?string $description = null;
 
-    #[ORM\Column(name: 'PL_CURRENCY', length: 3, nullable: true, options: ['default' => 'CDF'])]
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true, name: 'PL_CURRENCY', referencedColumnName: 'CY_ID')]
     #[Groups(['platform:get'])]
-    private ?string $currency = null;
+    private ?Currency $currency = null;
 
     #[ORM\Column(name: 'PL_PHONE', length: 30, nullable: true)]
     #[Groups(['platform:get'])]
@@ -160,17 +161,6 @@ class Platform implements RessourceInterface, PlatformRestrictiveInterface
     public function setDescription(?string $description): static
     {
         $this->description = $description;
-        return $this;
-    }
-
-    public function getCurrency(): ?string
-    {
-        return $this->currency;
-    }
-
-    public function setCurrency(?string $currency): static
-    {
-        $this->currency = $currency;
         return $this;
     }
 
@@ -278,6 +268,26 @@ class Platform implements RessourceInterface, PlatformRestrictiveInterface
     public function setAdminAccountCreated(bool $adminAccountCreated): static
     {
         $this->adminAccountCreated = $adminAccountCreated;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of currency
+     */ 
+    public function getCurrency(): Currency|null
+    {
+        return $this->currency;
+    }
+
+    /**
+     * Set the value of currency
+     *
+     * @return  self
+     */ 
+    public function setCurrency(?Currency $currency): static
+    {
+        $this->currency = $currency;
 
         return $this;
     }

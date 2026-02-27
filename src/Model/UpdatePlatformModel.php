@@ -2,6 +2,7 @@
 
 namespace App\Model;
 
+use App\Entity\Currency;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class UpdatePlatformModel
@@ -14,9 +15,7 @@ class UpdatePlatformModel
         
         public ?string $description = null,
 
-        #[Assert\Length(max: 3)]
-        #[Assert\Currency()]
-        public ?string $currency = null,
+        public ?Currency $currency = null,
 
         #[Assert\Length(max: 30)]
         public ?string $phone = null,

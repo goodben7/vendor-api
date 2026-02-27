@@ -4,6 +4,7 @@ namespace App\Manager;
 
 use App\Entity\Platform;
 use App\Event\ActivityEvent;
+use App\Entity\Currency;
 use App\Model\NewPlatformModel;
 use App\Model\UpdatePlatformModel;
 use App\Service\ActivityEventDispatcher;
@@ -25,6 +26,13 @@ class PlatformManager
         $platform->setAddress($model->address);
         $platform->setDescription($model->description);
         $platform->setCurrency($model->currency);
+        if ($model->currency !== null) {
+            $existingDefault = $this->em->getRepository(Currency::class)->findDefault();
+            if ($existingDefault && $existingDefault->getId() !== $model->currency->getId()) {
+                $existingDefault->setIsDefault(false);
+            }
+            $model->currency->setIsDefault(true);
+        }
         $platform->setPhone($model->phone);
         $platform->setEmail($model->email);
         $platform->setAllowTableManagement($model->allowTableManagement ?? true);
@@ -49,6 +57,13 @@ class PlatformManager
         $platform->setAddress($model->address);
         $platform->setDescription($model->description);
         $platform->setCurrency($model->currency);
+        if ($model->currency !== null) {
+            $existingDefault = $this->em->getRepository(Currency::class)->findDefault();
+            if ($existingDefault && $existingDefault->getId() !== $model->currency->getId()) {
+                $existingDefault->setIsDefault(false);
+            }
+            $model->currency->setIsDefault(true);
+        }
         $platform->setPhone($model->phone);
         $platform->setEmail($model->email);
         if ($model->allowTableManagement !== null) {

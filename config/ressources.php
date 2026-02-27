@@ -11,6 +11,7 @@ use App\Entity\Product;
 
 use App\Entity\Profile;
 use App\Entity\Category;
+use App\Entity\Currency;
 use App\Entity\Document;
 use App\Entity\Platform;
 use App\Model\Ressource;
@@ -37,4 +38,5 @@ return static function (): iterable {
     yield Ressource::new("order_item_option", OrderItemOption::class, "OO", true);
     yield Ressource::new("document", Document::class, "DC", true);
     yield Ressource::new("payment", Payment::class, "PA", true);
+    yield Ressource::new("currency", Currency::class, "CY", true);
 };

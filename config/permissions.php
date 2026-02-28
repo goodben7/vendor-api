@@ -102,4 +102,8 @@ return static function (): iterable {
     yield Permission::new('ROLE_PAYMENT_DETAILS', "Consulter les détails d'un paiement");
     yield Permission::new('ROLE_PAYMENT_LIST', "Consulter la liste des paiements");
     yield Permission::new('ROLE_PAYMENT_CREATE', "Créer un paiement");
+    
+    yield Permission::new('ROLE_EXCHANGE_RATE_READ', "Consulter les taux de change");
+    yield Permission::new('ROLE_EXCHANGE_RATE_CREATE', "Créer un taux de change");
+    yield Permission::new('ROLE_EXCHANGE_RATE_UPDATE', "Modifier un taux de change");
 };

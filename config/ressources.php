@@ -18,6 +18,7 @@ use App\Model\Ressource;
 use App\Entity\OrderItem;
 use App\Entity\OptionItem;
 use App\Entity\OptionGroup;
+use App\Entity\ExchangeRate;
 use App\Entity\PlatformTable;
 use App\Entity\OrderItemOption;
 
@@ -39,4 +40,5 @@ return static function (): iterable {
     yield Ressource::new("document", Document::class, "DC", true);
     yield Ressource::new("payment", Payment::class, "PA", true);
     yield Ressource::new("currency", Currency::class, "CY", true);
+    yield Ressource::new("exchange_rate", ExchangeRate::class, "EX", true);
 };

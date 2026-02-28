@@ -23,6 +23,7 @@ class CreatePaymentProcessor implements ProcessorInterface
         $command = new CreatePaymentCommand(
             $data->order,
             $data->amount,
+            $data->currency, 
             $data->method,
             $data->provider,
             $data->transactionRef

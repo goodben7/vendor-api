@@ -30,6 +30,7 @@ class CreatePaymentCommandHandler implements CommandHandlerInterface
             $model = new NewPaymentModel(
                 $command->order,
                 $command->amount,
+                $command->currency,
                 $command->method,
                 $command->provider,
                 $command->transactionRef,

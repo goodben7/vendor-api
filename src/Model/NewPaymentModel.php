@@ -4,6 +4,7 @@ namespace App\Model;
 
 use App\Entity\Order;
 use App\Entity\Payment;
+use App\Entity\Currency;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class NewPaymentModel
@@ -18,7 +19,11 @@ class NewPaymentModel
         #[Assert\Positive]
         public readonly string $amount,
 
-         #[Assert\NotNull]
+        #[Assert\NotNull]
+        #[Assert\NotBlank]
+        public Currency $currency,
+
+        #[Assert\NotNull]
         #[Assert\NotBlank]
         #[Assert\Choice(callback: [Payment::class, 'getMethodAsChoices'])]
         public readonly string $method,

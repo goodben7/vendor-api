@@ -20,6 +20,7 @@ use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
 use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use Symfony\Component\Serializer\Attribute\Groups;
+use App\Entity\Currency;
 
 #[ORM\Entity(repositoryClass: PaymentRepository::class)] 
 #[ORM\Table(name: '`payment`')]
@@ -78,6 +79,24 @@ class Payment implements RessourceInterface, PlatformRestrictiveInterface, Platf
     #[ORM\Column(name: 'PA_AMOUNT', type: Types::DECIMAL, precision: 17, scale: 2)]
     #[Groups(['payment:get'])]
     private ?string $amount = null;
+
+    #[ORM\ManyToOne(targetEntity: Currency::class)]
+    #[ORM\JoinColumn(name: 'PA_CURRENCY', referencedColumnName: 'CY_ID', nullable: true)]
+    #[Groups(['payment:get'])]
+    private ?Currency $currency = null;
+
+    #[ORM\Column(name: 'PA_EX_RATE_USED', type: Types::DECIMAL, precision: 17, scale: 6, nullable: true)]
+    #[Groups(['payment:get'])]
+    private ?string $exchangeRateUsed = null;
+
+    #[ORM\Column(name: 'PA_PAID_AMOUNT', type: Types::DECIMAL, precision: 17, scale: 2, nullable: true)]
+    #[Groups(['payment:get'])]
+    private ?string $paidAmount = null;
+
+    #[ORM\ManyToOne(targetEntity: Currency::class)]
+    #[ORM\JoinColumn(name: 'PA_PAID_CURRENCY', referencedColumnName: 'CY_ID', nullable: true)]
+    #[Groups(['payment:get'])]
+    private ?Currency $paidCurrency = null;
 
     #[ORM\Column(name: 'PA_METHOD', length: 30)]
     #[Groups(['payment:get'])]
@@ -139,6 +158,50 @@ class Payment implements RessourceInterface, PlatformRestrictiveInterface, Platf
     public function setAmount(string $amount): static
     {
         $this->amount = $amount;
+        return $this;
+    }
+
+    public function getCurrency(): ?Currency
+    {
+        return $this->currency;
+    }
+
+    public function setCurrency(?Currency $currency): static
+    {
+        $this->currency = $currency;
+        return $this;
+    }
+
+    public function getExchangeRateUsed(): ?string
+    {
+        return $this->exchangeRateUsed;
+    }
+
+    public function setExchangeRateUsed(?string $rate): static
+    {
+        $this->exchangeRateUsed = $rate;
+        return $this;
+    }
+
+    public function getPaidAmount(): ?string
+    {
+        return $this->paidAmount;
+    }
+
+    public function setPaidAmount(?string $amount): static
+    {
+        $this->paidAmount = $amount;
+        return $this;
+    }
+
+    public function getPaidCurrency(): ?Currency
+    {
+        return $this->paidCurrency;
+    }
+
+    public function setPaidCurrency(?Currency $currency): static
+    {
+        $this->paidCurrency = $currency;
         return $this;
     }
 

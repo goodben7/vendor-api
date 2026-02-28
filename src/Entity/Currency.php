@@ -68,13 +68,13 @@ class Currency implements RessourceInterface, PlatformRestrictiveInterface, Plat
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(IdGenerator::class)]
     #[ORM\Column(name: 'CY_ID', length: 16)]
-    #[Groups(['currency:get', 'platform:get'])]
+    #[Groups(['currency:get', 'platform:get', 'exchange_rate:get', 'payment:get'])]
     private ?string $id = null;
 
     #[ORM\Column(name: 'CY_CODE', length: 3)]
     #[Assert\Currency()]
     #[Assert\NotNull]
-    #[Groups(['currency:get', 'platform:get'])]
+    #[Groups(['currency:get', 'platform:get', 'exchange_rate:get', 'payment:get'])]
     private ?string $code = null;
 
     #[ORM\Column(name: 'CY_LABEL', length: 255, nullable: true)]
@@ -82,7 +82,7 @@ class Currency implements RessourceInterface, PlatformRestrictiveInterface, Plat
     private ?string $label = null;
 
     #[ORM\Column(name: 'CY_SYMBOL', length: 6)]
-    #[Groups(['currency:get', 'platform:get'])]
+    #[Groups(['currency:get', 'platform:get', 'exchange_rate:get', 'payment:get'])]
     private ?string $symbol = null;
 
     #[ORM\Column(name: 'CY_ACTIVE')]

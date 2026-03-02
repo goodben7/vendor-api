@@ -28,6 +28,9 @@ return static function (): iterable {
     yield Permission::new('ROLE_CURRENCY_LIST', "Consulter la liste des devises");
     yield Permission::new('ROLE_CURRENCY_UPDATE', "Modifier une devise");
     yield Permission::new('ROLE_CURRENCY_DETAILS', "Consulter les détails d'une devise");
+    yield Permission::new('ROLE_CURRENCY_DELETE', "Supprimer une devise");
+
+
 
     yield Permission::new('ROLE_ACTIVITY_LIST', "Consulter la liste des activités"); 
     yield Permission::new('ROLE_ACTIVITY_VIEW', "Consulter les détails d'une activité"); 
@@ -106,4 +109,5 @@ return static function (): iterable {
     yield Permission::new('ROLE_EXCHANGE_RATE_READ', "Consulter les taux de change");
     yield Permission::new('ROLE_EXCHANGE_RATE_CREATE', "Créer un taux de change");
     yield Permission::new('ROLE_EXCHANGE_RATE_UPDATE', "Modifier un taux de change");
+    yield Permission::new('ROLE_EXCHANGE_RATE_DELETE', "Supprimer un taux de change");
 };

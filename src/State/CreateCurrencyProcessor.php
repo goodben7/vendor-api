@@ -13,6 +13,9 @@ class CreateCurrencyProcessor implements ProcessorInterface
     {
     }
 
+    /**
+     * @param \App\Dto\CreateCurrencyDto $data 
+     */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
     {
         $model = new NewCurrencyModel(

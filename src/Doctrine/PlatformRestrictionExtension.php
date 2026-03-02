@@ -61,6 +61,16 @@ class PlatformRestrictionExtension implements QueryCollectionExtensionInterface,
             ]);
         }
         
+        $interfaces = \class_implements($resourceClass);
+        if (!isset($interfaces[PlatformRestrictiveInterface::class])) {
+            if ($this->logger) {
+                $this->logger->info('PlatformRestrictionExtension::restrict - Class does not implement PlatformRestrictiveInterface', [ 
+                    'resourceClass' => $resourceClass
+                ]);
+            }
+            return;
+        }
+
         $platformId = $this->getPlatformIdFromStorageOrUser();
         
         if ($this->logger) {
@@ -73,18 +83,15 @@ class PlatformRestrictionExtension implements QueryCollectionExtensionInterface,
         }
         
         if (null == $platformId) {
-            if ($this->logger) {
-                $this->logger->warning('PlatformRestrictionExtension::restrict - No platform ID found in storage or from authenticated user');
-            }
-            return;
-        }
-
-        $interfaces = \class_implements($resourceClass);
-        if (!isset($interfaces[PlatformRestrictiveInterface::class])) {
-            if ($this->logger) {
-                $this->logger->info('PlatformRestrictionExtension::restrict - Class does not implement PlatformRestrictiveInterface', [ 
-                    'resourceClass' => $resourceClass
-                ]);
+            if ($resourceClass === 'App\\Entity\\Currency') {
+                $queryBuilder->andWhere('1 = 0');
+                if ($this->logger) {
+                    $this->logger->warning('PlatformRestrictionExtension::restrict - No platform ID: hiding Currency collection/items');
+                }
+            } else {
+                if ($this->logger) {
+                    $this->logger->warning('PlatformRestrictionExtension::restrict - No platform ID found in storage or from authenticated user');
+                }
             }
             return;
         }

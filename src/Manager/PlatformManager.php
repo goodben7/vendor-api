@@ -56,13 +56,13 @@ class PlatformManager
         $platform->setName($model->name);
         $platform->setAddress($model->address);
         $platform->setDescription($model->description);
-        $platform->setCurrency($model->currency);
         if ($model->currency !== null) {
             $existingDefault = $this->em->getRepository(Currency::class)->findDefault();
             if ($existingDefault && $existingDefault->getId() !== $model->currency->getId()) {
                 $existingDefault->setIsDefault(false);
             }
             $model->currency->setIsDefault(true);
+            $platform->setCurrency($model->currency);
         }
         $platform->setPhone($model->phone);
         $platform->setEmail($model->email);

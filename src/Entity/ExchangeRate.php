@@ -2,21 +2,23 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\Get;
-use App\Doctrine\IdGenerator;
-use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Patch;
-use Doctrine\ORM\Mapping as ORM;
-use App\Model\RessourceInterface;
-use App\Dto\CreateExchangeRateDto;
+use ApiPlatform\Doctrine\Common\State\PersistProcessor;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Contract\PlatformCentricInterface;
+use App\Contract\PlatformRestrictiveInterface;
+use App\Doctrine\IdGenerator;
+use App\Dto\CreateExchangeRateDto;
+use App\Model\RessourceInterface;
 use App\Repository\ExchangeRateRepository;
 use App\State\CreateExchangeRateProcessor;
-use App\Contract\PlatformRestrictiveInterface;
+use App\State\DeleteExchangeRateProcessor;
+use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
-use ApiPlatform\Doctrine\Common\State\PersistProcessor;
 
 #[ORM\Entity(repositoryClass: ExchangeRateRepository::class)]
 #[ORM\Table(name: 'exchange_rate')]
@@ -38,6 +40,10 @@ use ApiPlatform\Doctrine\Common\State\PersistProcessor;
             security: 'is_granted("ROLE_EXCHANGE_RATE_UPDATE")',
             denormalizationContext: ['groups' => 'exchange_rate:patch',],
             processor: PersistProcessor::class,
+        ),
+        new Delete(
+            security:"is_granted('ROLE_EXCHANGE_RATE_DELETE')",
+            processor: DeleteExchangeRateProcessor::class 
         ),
     ]
 )]
@@ -85,6 +91,10 @@ class ExchangeRate implements RessourceInterface, PlatformRestrictiveInterface, 
     #[ORM\Column(type: 'boolean', name: 'EX_ACTIVE')]
     #[Groups(['exchange_rate:get', 'exchange_rate:patch'])]
     private bool $active = true;
+
+    #[ORM\Column(name: 'EX_DELETED', options: ['default' => false])]
+    #[Groups(['exchange_rate:get'])]
+    private ?bool $deleted = false;
 
     public function getId(): ?string
     {
@@ -198,5 +208,25 @@ class ExchangeRate implements RessourceInterface, PlatformRestrictiveInterface, 
         $numerator = bcmul($baseAmount, $this->targetRate ?? '0', 6);
         $result = bcdiv($numerator, $this->baseRate ?? '1', 6);
         return bcadd($result, '0', 2);
+    }
+
+    /**
+     * Get the value of deleted
+     */ 
+    public function getDeleted(): bool|null
+    {
+        return $this->deleted;
+    }
+
+    /**
+     * Set the value of deleted
+     *
+     * @return  self
+     */ 
+    public function setDeleted(?bool $deleted): static
+    {
+        $this->deleted = $deleted;
+
+        return $this;
     }
 }

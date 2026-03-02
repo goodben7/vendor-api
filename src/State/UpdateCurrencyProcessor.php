@@ -13,6 +13,10 @@ class UpdateCurrencyProcessor implements ProcessorInterface
     {
     }
 
+
+    /**
+     * @param \App\Dto\UpdateCurrencyDto $data 
+     */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
     {
         $model = new UpdateCurrencyModel(

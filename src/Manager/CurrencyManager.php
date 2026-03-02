@@ -63,6 +63,12 @@ class CurrencyManager
 
     public function updateFrom(string $currencyId, UpdateCurrencyModel $model): Currency
     {
+        $platformId = $this->dataStorage->getPlatformId();
+
+        if (null === $platformId) {
+            throw new UnavailableDataException('Platform not found');
+        }
+
         $currency = $this->findCurrency($currencyId);
 
         if ($model->code !== null) {
@@ -117,5 +123,25 @@ class CurrencyManager
             throw new UnavailableDataException(\sprintf('cannot find currency with id: %s', $currencyId));
         }
         return $currency;
+    }
+
+    public function delete(string $currencyId): void
+    {
+        $currency = $this->findCurrency($currencyId);
+
+        if ($currency->getDeleted()) {
+            throw new \InvalidArgumentException('this action is not allowed');
+        }
+
+        if($currency->getIsDefault()) {
+            throw new \InvalidArgumentException("you can't delete the default currency");
+        }
+
+        $currency->setDeleted(true);
+        $currency->setUpdatedAt(new \DateTimeImmutable('now'));
+
+        $this->em->flush();
+
+        $this->eventDispatcher->dispatch($currency, ActivityEvent::ACTION_DELETE);
     }
 }

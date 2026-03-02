@@ -33,4 +33,27 @@ class ExchangeRateManager
 
         return $rate;
     }
+
+    public function delete(string $exchangeRateId): void
+    {
+        $rate = $this->em->find(ExchangeRate::class, $exchangeRateId);
+
+        if (null === $rate) {
+            throw new \InvalidArgumentException('Exchange rate not found');
+        }
+
+        if ($rate->getDeleted()) {
+            throw new \InvalidArgumentException('this action is not allowed');
+        }
+
+        if($rate->isActive()) {
+            throw new \InvalidArgumentException('this action is not allowed');
+        }
+
+        $rate->setDeleted(true);
+
+        $this->em->flush();
+
+        $this->eventDispatcher->dispatch($rate, ActivityEvent::ACTION_DELETE);
+    }
 }

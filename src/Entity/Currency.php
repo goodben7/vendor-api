@@ -2,28 +2,30 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\Get;
-use App\Doctrine\IdGenerator;
-use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Patch;
-use Doctrine\ORM\Mapping as ORM;
-use App\Model\RessourceInterface;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Doctrine\Orm\State\CollectionProvider;
+use ApiPlatform\Doctrine\Orm\State\ItemProvider;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
-use App\Repository\CurrencyRepository;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Contract\PlatformCentricInterface;
 use App\Contract\PlatformRestrictiveInterface;
-use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
-use ApiPlatform\Doctrine\Orm\State\ItemProvider;
-use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
-use Symfony\Component\Serializer\Attribute\Groups;
-use ApiPlatform\Doctrine\Orm\State\CollectionProvider;
-use Symfony\Component\Validator\Constraints as Assert;
+use App\Doctrine\IdGenerator;
 use App\Dto\CreateCurrencyDto;
 use App\Dto\UpdateCurrencyDto;
+use App\Model\RessourceInterface;
+use App\Repository\CurrencyRepository;
 use App\State\CreateCurrencyProcessor;
+use App\State\DeleteCurrencyProcessor;
 use App\State\UpdateCurrencyProcessor;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CurrencyRepository::class)] 
 #[ORM\Table(name: '`currency`')]
@@ -48,6 +50,10 @@ use App\State\UpdateCurrencyProcessor;
             security: 'is_granted("ROLE_CURRENCY_UPDATE")',
             input: UpdateCurrencyDto::class,
             processor: UpdateCurrencyProcessor::class,
+        ),
+        new Delete(
+            security:"is_granted('ROLE_CURRENCY_DELETE')",
+            processor: DeleteCurrencyProcessor::class
         ),
     ]
 )]
@@ -88,6 +94,10 @@ class Currency implements RessourceInterface, PlatformRestrictiveInterface, Plat
     #[ORM\Column(name: 'CY_ACTIVE')]
     #[Groups(['currency:get', 'platform:get'])]
     private ?bool $active = null;
+
+    #[ORM\Column(name: 'CY_DELETED', options: ['default' => false])]
+    #[Groups(['currency:get'])]
+    private ?bool $deleted = false;
 
     #[ORM\Column(name: 'CY_IS_DEFAULT', options: ['default' => false])]
     #[Groups(['currency:get', 'platform:get'])]
@@ -233,6 +243,26 @@ class Currency implements RessourceInterface, PlatformRestrictiveInterface, Plat
     public function setIsDefault(bool|null $isDefault): static
     {
         $this->isDefault = $isDefault;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of deleted
+     */ 
+    public function getDeleted(): bool|null
+    {
+        return $this->deleted;
+    }
+
+    /**
+     * Set the value of deleted
+     *
+     * @return  self
+     */ 
+    public function setDeleted($deleted): static
+    {
+        $this->deleted = $deleted;
 
         return $this;
     }

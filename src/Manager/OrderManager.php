@@ -7,16 +7,19 @@ use App\Entity\OrderItem;
 use App\Event\ActivityEvent;
 use App\Model\NewOrderModel;
 use App\Entity\OrderItemOption;
-use Symfony\Component\Uid\Uuid;
 use App\Service\ActivityEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Exception\InvalidActionInputException;
+use App\Entity\Currency;
+use App\Entity\Platform;
+use App\Service\CurrencyConverter;
 
 class OrderManager
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
         private ActivityEventDispatcher $eventDispatcher,
+        private CurrencyConverter $currencyConverter,
     ) {
     }
 
@@ -78,6 +81,38 @@ class OrderManager
         $this->eventDispatcher->dispatch($order, ActivityEvent::ACTION_CREATE);
 
         return $order;
+    }
+
+    public function previewConversion(Order $order, Currency $paidCurrency): array
+    {
+        $platformId = $order->getPlatformId();
+        if (null === $platformId) {
+            throw new InvalidActionInputException('Platform not found');
+        }
+        $platform = $this->entityManager->find(Platform::class, $platformId);
+        if (null === $platform) {
+            throw new InvalidActionInputException('Platform not found');
+        }
+        if (null === $platform->getCurrency()) {
+            throw new InvalidActionInputException('Platform currency must be set.');
+        }
+        $restaurantCurrency = $platform->getCurrency();
+        $baseAmount = $order->getTotalAmount();
+        if ($paidCurrency->getId() === $restaurantCurrency->getId()) {
+            $targetAmount = $baseAmount;
+            $rate = '1';
+        } else {
+            $targetAmount = $this->currencyConverter->convert($restaurantCurrency, $paidCurrency, $baseAmount);
+            $rate = $this->currencyConverter->getRate($restaurantCurrency, $paidCurrency);
+        }
+        return [
+            'orderId' => $order->getId(),
+            'baseCurrency' => $restaurantCurrency->getId(),
+            'targetCurrency' => $paidCurrency->getId(),
+            'baseAmount' => $baseAmount,
+            'targetAmount' => $targetAmount,
+            'rate' => $rate,
+        ];
     }
 
     public function markOrderAsSentToKitchen(Order $order): Order
@@ -162,4 +197,6 @@ class OrderManager
 
         return $reference;
     }
+
+
 }

@@ -24,12 +24,15 @@ use App\State\MarkOrderAsServedProcessor;
 use App\Contract\PlatformCentricInterface;
 use App\State\SentToKitchenOrderProcessor;
 use Doctrine\Common\Collections\Collection;
+use App\Dto\PreviewOrderConversionDto;
 use App\Contract\PlatformRestrictiveInterface;
 use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
 use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use Doctrine\Common\Collections\ArrayCollection;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use Symfony\Component\Serializer\Attribute\Groups;
+use App\State\PreviewOrderConversionProcessor;
+use App\Dto\PreviewOrderConversionView;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table(name: '`order`')]
@@ -73,6 +76,15 @@ use Symfony\Component\Serializer\Attribute\Groups;
             input: CancelOrderDto::class,
             processor: CancelOrderProcessor::class,
             security: "is_granted('ROLE_ORDER_AS_CANCELLED')",
+            status: 200,
+        ),
+        new Post(
+            uriTemplate: '/orders/preview-conversion',
+            input: PreviewOrderConversionDto::class,
+            processor: PreviewOrderConversionProcessor::class,
+            security: "is_granted('ROLE_PAYMENT_CREATE')",
+            output: PreviewOrderConversionView::class,
+            formats: ['json' => ['application/json']],
             status: 200,
         ),
     ]

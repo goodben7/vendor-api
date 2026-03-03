@@ -95,6 +95,7 @@ use App\Dto\PreviewOrderConversionView;
     'referenceUnique' => 'exact',
     'status' => 'exact',
     'platformId' => 'exact',
+    'paymentStatus' => 'exact',
 ])]
 #[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt', 'sentToKitchenAt', 'cancelledAt', 'servedAt', 'readyAt'])]
 #[ApiFilter(DateFilter::class, properties: ['createdAt', 'updatedAt', 'sentToKitchenAt', 'cancelledAt', 'servedAt', 'readyAt'])]
@@ -109,6 +110,10 @@ class Order implements RessourceInterface, PlatformRestrictiveInterface, Platfor
     public const string STATUS_PAID = 'P';
     public const string STATUS_CANCELLED = 'C';
 
+    public const string PAYMENT_STATUS_UNPAID = 'N';
+    public const string PAYMENT_STATUS_PENDING = 'P';
+    public const string PAYMENT_STATUS_PAID = 'S';
+    public const string PAYMENT_STATUS_FAILED = 'F';
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
@@ -158,6 +163,10 @@ class Order implements RessourceInterface, PlatformRestrictiveInterface, Platfor
     #[ORM\Column(name: 'OR_TOTAL_AMOUNT', type: Types::DECIMAL, precision: 17, scale: 2)]
     #[Groups(['order:get', 'payment:get'])]
     private ?string $totalAmount = null;
+
+    #[ORM\Column(name: 'OR_PAYMENT_STATUS', length: 1, options: ['default' => self::PAYMENT_STATUS_UNPAID])]
+    #[Groups(['order:get'])]
+    private ?string $paymentStatus = self::PAYMENT_STATUS_UNPAID;
 
     #[ORM\Column(name: 'OR_PLATFORM_ID', length: 16, nullable: true)]
     #[Groups(['order:get'])]
@@ -408,6 +417,17 @@ class Order implements RessourceInterface, PlatformRestrictiveInterface, Platfor
     {
         $this->platformId = $platformId;
 
+        return $this;
+    }
+
+    public function getPaymentStatus(): ?string
+    {
+        return $this->paymentStatus;
+    }
+
+    public function setPaymentStatus(string $paymentStatus): static
+    {
+        $this->paymentStatus = $paymentStatus;
         return $this;
     }
 }

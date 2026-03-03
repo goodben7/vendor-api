@@ -25,7 +25,7 @@ class PaymentSuccessListener implements EventSubscriberInterface
         if ($payment->getStatus() === Payment::STATUS_SUCCESS) {
             $order = $payment->getOrder();
             if ($order) {
-                $order->setStatus(Order::STATUS_PAID);
+                $order->setPaymentStatus(Order::PAYMENT_STATUS_PAID);
                 $this->entityManager->flush();
             }
         }

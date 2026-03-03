@@ -28,10 +28,10 @@ class PaymentRepository extends ServiceEntityRepository
             ->innerJoin('p.order', 'o')
             ->where('p.order = :order')
             ->andWhere('p.status = :paymentStatus')
-            ->andWhere('o.status = :orderStatus')
+            ->andWhere('o.paymentStatus = :orderPaymentStatus')
             ->setParameter('order', $order)
             ->setParameter('paymentStatus', Payment::STATUS_SUCCESS)
-            ->setParameter('orderStatus', Order::STATUS_PAID)
+            ->setParameter('orderPaymentStatus', Order::PAYMENT_STATUS_PAID)
             ->getQuery()
             ->getOneOrNullResult()
         ;

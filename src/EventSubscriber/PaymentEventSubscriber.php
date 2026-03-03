@@ -6,12 +6,15 @@ use App\Entity\Payment;
 use Psr\Log\LoggerInterface;
 use App\Service\CashPaymentService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Order;
 
 class PaymentEventSubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private CashPaymentService $cashPaymentService,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
+        private EntityManagerInterface $entityManager
     ) {
     }
 
@@ -32,6 +35,12 @@ class PaymentEventSubscriber implements EventSubscriberInterface
         $this->logger->info('PaymentEventSubscriber: onPaymentCreated triggered.');
         
         $this->logger->info('Processing payment.', ['payment_id' => $payment->getId()]);
+
+        $order = $payment->getOrder();
+        if ($order instanceof Order) {
+            $order->setPaymentStatus(Order::PAYMENT_STATUS_PENDING);
+            $this->entityManager->flush();
+        }
 
         // Process cash payments automatically
         if ($payment->getMethod() === Payment::METHOD_CASH) {

@@ -4,8 +4,10 @@ namespace App\Manager;
 
 use App\Entity\ExchangeRate;
 use App\Event\ActivityEvent;
+use App\Exception\UnavailableDataException;
 use App\Model\NewExchangeRateModel;
 use App\Service\ActivityEventDispatcher;
+use App\Storage\DataStorage;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ExchangeRateManager
@@ -13,6 +15,7 @@ class ExchangeRateManager
     public function __construct(
         private EntityManagerInterface $em,
         private ActivityEventDispatcher $eventDispatcher,
+        private DataStorage $dataStorage,
     ) {
     }
 
@@ -36,6 +39,12 @@ class ExchangeRateManager
 
     public function delete(string $exchangeRateId): void
     {
+        $platformId = $this->dataStorage->getPlatformId();
+
+        if (null === $platformId) {
+            throw new UnavailableDataException('Platform not found');
+        }
+        
         $rate = $this->em->find(ExchangeRate::class, $exchangeRateId);
 
         if (null === $rate) {
@@ -51,6 +60,7 @@ class ExchangeRateManager
         }
 
         $rate->setDeleted(true);
+        $rate->setActive(false);
 
         $this->em->flush();
 

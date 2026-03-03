@@ -2,17 +2,19 @@
 
 namespace App\Manager;
 
+use App\Entity\Currency;
 use App\Entity\Order;
 use App\Entity\OrderItem;
-use App\Event\ActivityEvent;
-use App\Model\NewOrderModel;
 use App\Entity\OrderItemOption;
-use App\Service\ActivityEventDispatcher;
-use Doctrine\ORM\EntityManagerInterface;
-use App\Exception\InvalidActionInputException;
-use App\Entity\Currency;
 use App\Entity\Platform;
+use App\Event\ActivityEvent;
+use App\Exception\InvalidActionInputException;
+use App\Exception\UnavailableDataException;
+use App\Model\NewOrderModel;
+use App\Service\ActivityEventDispatcher;
 use App\Service\CurrencyConverter;
+use App\Storage\DataStorage;
+use Doctrine\ORM\EntityManagerInterface;
 
 class OrderManager
 {
@@ -20,6 +22,7 @@ class OrderManager
         private EntityManagerInterface $entityManager,
         private ActivityEventDispatcher $eventDispatcher,
         private CurrencyConverter $currencyConverter,
+        private DataStorage $dataStorage,
     ) {
     }
 
@@ -117,6 +120,12 @@ class OrderManager
 
     public function markOrderAsSentToKitchen(Order $order): Order
     {
+        $platformId = $this->dataStorage->getPlatformId();
+
+        if (null === $platformId) {
+            throw new UnavailableDataException('Platform not found');
+        }
+        
         if ($order->getStatus() !== Order::STATUS_DRAFT) {
             throw new InvalidActionInputException('Action not allowed : invalid order state');
         }
@@ -134,6 +143,12 @@ class OrderManager
 
     public function markOrderAsReady(Order $order): Order
     {
+        $platformId = $this->dataStorage->getPlatformId();
+
+        if (null === $platformId) {
+            throw new UnavailableDataException('Platform not found');
+        }
+
         if ($order->getStatus() !== Order::STATUS_SENT_TO_KITCHEN) {
             throw new InvalidActionInputException('Action not allowed: Order must be in "SENT_TO_KITCHEN" status.');
         }
@@ -151,6 +166,12 @@ class OrderManager
 
     public function markOrderAsServed(Order $order): Order
     {
+        $platformId = $this->dataStorage->getPlatformId();
+
+        if (null === $platformId) {
+            throw new UnavailableDataException('Platform not found');
+        }
+
         if ($order->getStatus() !== Order::STATUS_READY) {
             throw new InvalidActionInputException('Action not allowed: Order must be in "READY" status.');
         }
@@ -168,6 +189,12 @@ class OrderManager
 
     public function cancelOrder(Order $order, string $reason): Order
     {
+        $platformId = $this->dataStorage->getPlatformId();
+
+        if (null === $platformId) {
+            throw new UnavailableDataException('Platform not found');
+        }
+
         if ($order->getStatus() === Order::STATUS_PAID || $order->getStatus() === Order::STATUS_CANCELLED) {
             throw new InvalidActionInputException('Action not allowed: Order is already paid or cancelled.');
         }

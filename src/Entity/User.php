@@ -2,47 +2,48 @@
 
 namespace App\Entity;
 
-use App\Enum\EntityType;
-use App\Dto\CreateUserDto;
-use App\Dto\UpdateUserDto;
-use ApiPlatform\Metadata\Get;
-use App\Doctrine\IdGenerator;
-use ApiPlatform\Metadata\Post;
-use App\Dto\ChangePasswordDto;
-use App\Dto\SetUserProfileDto;
-use Doctrine\DBAL\Types\Types;
-use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Doctrine\Orm\State\CollectionProvider;
+use ApiPlatform\Doctrine\Orm\State\ItemProvider;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use App\Contract\PlatformCentricInterface;
+use App\Contract\PlatformRestrictiveInterface;
+use App\Doctrine\IdGenerator;
 use App\Dto\AddUserSideRolesDto;
-use Doctrine\ORM\Mapping as ORM;
+use App\Dto\ChangePasswordDto;
 use App\Dto\CreateAdminAccessDto;
+use App\Dto\CreateUserDto;
+use App\Dto\SetUserProfileDto;
+use App\Dto\UpdateUserDto;
+use App\Enum\EntityType;
+use App\Manager\PermissionManager;
+use App\Model\RemoveInterface;
 use App\Model\RessourceInterface;
 use App\Model\UserProxyIntertace;
-use App\Manager\PermissionManager;
 use App\Provider\UserInfoProvider;
 use App\Repository\UserRepository;
+use App\State\AddUserSideRolesProcessor;
+use App\State\ChangeUserPasswordProcessor;
+use App\State\CreateAdminAccessProcessor;
 use App\State\CreateUserProcessor;
 use App\State\DeleteUserProcessor;
 use App\State\SetProfileProcessor;
-use App\State\UpdateUserProcessor;
-use ApiPlatform\Metadata\ApiFilter;
-use ApiPlatform\Metadata\ApiResource;
 use App\State\ToggleLockUserProcessor;
-use ApiPlatform\Metadata\GetCollection;
-use App\State\AddUserSideRolesProcessor;
-use App\State\CreateAdminAccessProcessor;
-use App\Contract\PlatformCentricInterface;
-use App\State\ChangeUserPasswordProcessor;
-use App\Contract\PlatformRestrictiveInterface;
-use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
-use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
-use ApiPlatform\Doctrine\Orm\State\ItemProvider;
-use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
-use Symfony\Component\Serializer\Attribute\Groups;
-use ApiPlatform\Doctrine\Orm\State\CollectionProvider;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Security\Core\User\UserInterface;
+use App\State\UpdateUserProcessor;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -136,7 +137,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 ])]
 #[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt'])]
 #[ApiFilter(DateFilter::class, properties: ['createdAt', 'updatedAt'])]
-class User implements UserInterface, PasswordAuthenticatedUserInterface, RessourceInterface, PlatformRestrictiveInterface, PlatformCentricInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, RessourceInterface, PlatformRestrictiveInterface, PlatformCentricInterface, RemoveInterface
 {
     public const string ID_PREFIX = "US";
     
@@ -360,7 +361,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Ressour
         return $this->deleted;
     }
 
-    public function setDeleted(bool $deleted): static
+    public function setDeleted(?bool $deleted): static
     {
         $this->deleted = $deleted;
 
@@ -635,5 +636,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Ressour
         $this->adminAccountCreated = $adminAccountCreated;
 
         return $this;
+    }
+
+    /**
+     * Get the value of deleted
+     */ 
+    public function getDeleted(): bool|null
+    {
+        return $this->deleted;
     }
 }

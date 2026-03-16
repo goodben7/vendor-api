@@ -26,6 +26,7 @@ use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: TabletRepository::class)]
+#[ORM\UniqueConstraint(name: 'UNIQ_TABLET_DEVICE_ID', fields: ['deviceId'])]
 #[ORM\Table(name: '`tablet`')]
 #[ApiResource(
     normalizationContext: ['groups' => 'tablet:get'],
@@ -63,6 +64,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
     'deviceModel' => 'ipartial',
     'mode' => 'exact',
     'deleted' => 'exact',
+    'tabletAccountCreated' => 'exact',
 ])]
 #[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt', 'lastHeartbeat'])]
 class Tablet implements RessourceInterface, PlatformRestrictiveInterface, PlatformCentricInterface, RemoveInterface
@@ -126,6 +128,14 @@ class Tablet implements RessourceInterface, PlatformRestrictiveInterface, Platfo
     #[ORM\Column(name: 'TP_DELETED', options: ['default' => false])]
     #[Groups(['tablet:get'])]
     private ?bool $deleted = false;
+
+    #[ORM\Column(name: 'TB_TABLET_ACCOUNT_CREATED', options: ['default' => false])]
+    #[Groups(['tablet:get'])]
+    private ?bool $tabletAccountCreated = false;
+
+    #[ORM\Column(name: 'TB_USER_ID', length: 16, nullable: true)]
+    #[Groups(['tablet:get'])]
+    private ?string $userId = null;
 
     #[ORM\Column(name: 'TB_CREATED_AT')]
     #[Groups(['tablet:get'])]
@@ -296,6 +306,46 @@ class Tablet implements RessourceInterface, PlatformRestrictiveInterface, Platfo
     public function setDeleted(?bool $deleted): static
     {
         $this->deleted = $deleted;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of tabletAccountCreated
+     */ 
+    public function getTabletAccountCreated(): bool|null
+    {
+        return $this->tabletAccountCreated;
+    }
+
+    /**
+     * Set the value of tabletAccountCreated
+     *
+     * @return  self
+     */ 
+    public function setTabletAccountCreated(bool $tabletAccountCreated): static
+    {
+        $this->tabletAccountCreated = $tabletAccountCreated;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of userId
+     */ 
+    public function getUserId(): string|null
+    {
+        return $this->userId;
+    }
+
+    /**
+     * Set the value of userId
+     *
+     * @return  self
+     */ 
+    public function setUserId(?string $userId): static
+    {
+        $this->userId = $userId;
 
         return $this;
     }

@@ -45,7 +45,7 @@ class Activity
     #[Groups(['activity:view'])]
     private ?int $id = null;
 
-    #[ORM\Column(name: 'AC_ACTIVITY', length: 20)]
+    #[ORM\Column(name: 'AC_ACTIVITY', length: 120)]
     #[Groups(['activity:view'])]
     private ?string $activity = null;
 

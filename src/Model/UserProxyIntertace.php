@@ -9,5 +9,7 @@ interface UserProxyIntertace
     public const string PERSON_MANAGER = 'MGR';  
     public const string PERSON_STAFF = 'STF';  
     public const string PERSON_KITCHEN  = 'KIT';  
+    public const string PERSON_WAITER = 'WTR';
+    public const string PERSON_CASHIER = 'CSR';
+    public const string PERSON_SELF_ORDER = 'SFO';
 }
-

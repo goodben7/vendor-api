@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\User;
+use App\Enum\EntityType;
 use App\Model\UserProxyIntertace;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -51,6 +52,21 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->andWhere('u.platformId = :platformId')
             ->setParameter('personAdmin', UserProxyIntertace::PERSON_ADMIN)
             ->setParameter('platformId', $platformId)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+
+    public function findTabletByPlatformId(string $platformId, string $holderId): ?User
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.platformId = :platformId')
+            ->andWhere('u.holderType = :holderType')
+            ->andWhere('u.holderId = :holderId')
+            ->setParameter('platformId', $platformId)
+            ->setParameter('holderType', EntityType::TABLET)
+            ->setParameter('holderId', $holderId)
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult()

@@ -2,19 +2,23 @@
 
 namespace App\Manager;
 
-use App\Entity\User;
 use App\Entity\Profile;
+use App\Entity\Tablet;
+use App\Entity\User;
+use App\Enum\EntityType;
+use App\Exception\InvalidActionInputException;
+use App\Exception\UnauthorizedActionException;
+use App\Exception\UnavailableDataException;
+use App\Manager\PermissionManager;
+use App\Model\NewAdminAccessModel;
+use App\Model\NewTabletAccessModel;
 use App\Model\NewUserModel;
 use App\Model\UpdateUserModel;
 use App\Model\UserProxyIntertace;
-use App\Manager\PermissionManager;
-use App\Model\NewAdminAccessModel;
 use App\Repository\UserRepository;
 use App\Service\ActivityEventDispatcher;
+use App\Storage\DataStorage;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Exception\UnavailableDataException;
-use App\Exception\InvalidActionInputException;
-use App\Exception\UnauthorizedActionException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 
@@ -25,6 +29,7 @@ class UserManager
         private UserPasswordHasherInterface $hasher,
         private ActivityEventDispatcher $eventDispatcher,
         private UserRepository $repository,
+        private DataStorage $dataStorage,
     ) {  
     }
 
@@ -251,4 +256,100 @@ class UserManager
 
         return $user;
     }
-}
+
+    public function createTabletAccess(NewTabletAccessModel $model): User {
+
+        $platformId = $this->dataStorage->getPlatformId();
+
+        if (null === $platformId) {
+            throw new UnavailableDataException('Platform not found');
+        }
+
+        if ($model->platformId !== $platformId) {
+            throw new InvalidActionInputException('Invalid platformId: must match the current platform');
+        }
+
+        if ($this->repository->findTabletByPlatformId($model->platformId, $model->holderId) !== null) {
+            throw new InvalidActionInputException('Tablet account already exists for this platform');
+        }
+
+        $allowedPersonTypes = [
+            UserProxyIntertace::PERSON_WAITER,
+            UserProxyIntertace::PERSON_CASHIER,
+            UserProxyIntertace::PERSON_SELF_ORDER,
+            UserProxyIntertace::PERSON_KITCHEN,
+        ];
+        if (!\in_array($model->profile->getPersonType(), $allowedPersonTypes, true)) {
+            throw new InvalidActionInputException('Invalid profile: Person type must be one of TABLET modes');
+        }
+
+    
+
+        if ($model->holderType !== EntityType::TABLET) {
+            throw new InvalidActionInputException('Invalid holder type: must be TABLET');
+        }
+
+        if (!$model->holderId) {
+            throw new InvalidActionInputException('holderId is required for tablet access');
+        }
+
+        /** @var Tablet|null $tablet */
+        $tablet = $this->em->find(Tablet::class, $model->holderId);
+        if (null === $tablet) {
+            throw new InvalidActionInputException('Cannot find tablet with provided holderId');
+        }
+        if ($tablet->getDeleted()) {
+            throw new InvalidActionInputException('Tablet is deleted');
+        }
+        if (!$tablet->isActive()) {
+            throw new InvalidActionInputException('Tablet is not active');
+        }
+        if ($tablet->getPlatformId() !== $model->platformId) {
+            throw new InvalidActionInputException('Tablet does not belong to the provided platform');
+        }
+
+        $mode = $tablet->getMode();
+        if (!$mode) {
+            throw new InvalidActionInputException('Tablet mode must be set before creating access');
+        }
+        $expectedByMode = [
+            Tablet::MODE_WAITER => UserProxyIntertace::PERSON_WAITER,
+            Tablet::MODE_CASHIER => UserProxyIntertace::PERSON_CASHIER,
+            Tablet::MODE_KITCHEN => UserProxyIntertace::PERSON_KITCHEN,
+            Tablet::MODE_SELF_ORDER => UserProxyIntertace::PERSON_SELF_ORDER,
+        ];
+        if (!isset($expectedByMode[$mode])) {
+            throw new InvalidActionInputException('Invalid tablet mode');
+        }
+        if ($model->profile->getPersonType() !== $expectedByMode[$mode]) {
+            throw new InvalidActionInputException('Invalid profile: personType must match tablet mode');
+        }
+
+        $deviceId = $tablet->getDeviceId();
+        if (!$deviceId) {
+            throw new InvalidActionInputException('Tablet deviceId must be set before creating access');
+        }
+
+        $user = new User();
+
+        $user->setEmail($model->email);
+        $user->setCreatedAt(new \DateTimeImmutable('now'));
+        $user->setPlainPassword($model->plainPassword);
+        $user->setPassword($this->hasher->hashPassword($user, $model->plainPassword));
+        $user->setPhone($model->phone ?? $deviceId);
+        $user->setDisplayName($model->displayName);
+        $user->setProfile($model->profile);
+        $user->setPlatformId($model->platformId);
+        $user->setPersonType($model->profile->getPersonType());
+        $user->setHolderId($model->holderId);
+        $user->setHolderType($model->holderType);
+        $user->setTabletAccountCreated(true);
+        $user->setUpdatedAt(new \DateTimeImmutable('now'));
+        $this->em->persist($user);
+        $this->em->flush();
+        
+        $this->eventDispatcher->dispatch($user, User::EVENT_USER_TABLET_ACCESS_CREATED); 
+
+        return $user;
+    }
+ }

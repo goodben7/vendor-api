@@ -4,12 +4,14 @@ namespace App\Manager;
 
 use App\Entity\Tablet;
 use App\Event\ActivityEvent;
-use App\Storage\DataStorage;
+use App\Exception\UnavailableDataException;
+use App\Message\Command\CommandBusInterface;
+use App\Message\Command\UpdateUserCommand;
 use App\Model\NewTabletModel;
 use App\Model\UpdateTabletModel;
 use App\Service\ActivityEventDispatcher;
+use App\Storage\DataStorage;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Exception\UnavailableDataException;
 
 class TabletManager
 {
@@ -17,6 +19,7 @@ class TabletManager
         private EntityManagerInterface $em,
         private ActivityEventDispatcher $eventDispatcher,
         private DataStorage $dataStorage,
+        private CommandBusInterface $commands
     ) {
     }
 
@@ -69,6 +72,17 @@ class TabletManager
             $tablet->setActive($model->active);
         }
         $tablet->setUpdatedAt(new \DateTimeImmutable('now'));
+
+        $userId = $tablet->getUserId();
+        if ($userId) {
+            $command = new UpdateUserCommand(
+                null,
+                $tablet->getDeviceId(),
+                $tablet->getLabel(),
+                $userId,
+            );
+            $this->commands->dispatch($command);
+        }
 
         $this->em->flush();
 

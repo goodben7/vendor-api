@@ -20,6 +20,7 @@ use App\Doctrine\IdGenerator;
 use App\Dto\AddUserSideRolesDto;
 use App\Dto\ChangePasswordDto;
 use App\Dto\CreateAdminAccessDto;
+use App\Dto\CreateTabletAccessDto;
 use App\Dto\CreateUserDto;
 use App\Dto\SetUserProfileDto;
 use App\Dto\UpdateUserDto;
@@ -33,6 +34,7 @@ use App\Repository\UserRepository;
 use App\State\AddUserSideRolesProcessor;
 use App\State\ChangeUserPasswordProcessor;
 use App\State\CreateAdminAccessProcessor;
+use App\State\CreateTabletccessProcessor;
 use App\State\CreateUserProcessor;
 use App\State\DeleteUserProcessor;
 use App\State\SetProfileProcessor;
@@ -117,6 +119,13 @@ use Symfony\Component\Validator\Constraints as Assert;
             processor: CreateAdminAccessProcessor::class,
             status: 201,
         ),
+        new Post(
+            uriTemplate: "users/tablet_access",
+            security: 'is_granted("ROLE_TABLET_ACCESS_CREATE")',
+            input: CreateTabletAccessDto::class,
+            processor: CreateTabletccessProcessor::class,
+            status: 201,
+        ),
     ]
 )]
 #[ApiFilter(SearchFilter::class, properties: [
@@ -134,6 +143,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     "holderType" => 'exact',
     "platformId" => 'exact',
     'adminAccountCreated' => 'exact',
+    'tabletAccountCreated' => 'exact',
 ])]
 #[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt'])]
 #[ApiFilter(DateFilter::class, properties: ['createdAt', 'updatedAt'])]
@@ -148,6 +158,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Ressour
     public const string EVENT_USER_LOCKED = "locked";
     public const string EVENT_USER_UNLOCKED = "unlocked";
     public const string EVENT_USER_ADMIN_ACCESS_CREATED = "admin_access_created";
+    public const string EVENT_USER_TABLET_ACCESS_CREATED = "tablet_access_created";
 
     public const string EVENT_USER_SET_PROFILE = "set_profile";
 
@@ -177,7 +188,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Ressour
 
     public ?string $plainPassword;
 
-    #[ORM\Column(name: 'US_PHONE', length: 15, nullable: true)]
+    #[ORM\Column(name: 'US_PHONE', length: 120, nullable: true)]
     #[Groups(['user:get'])]
     private ?string $phone = null;
 
@@ -230,6 +241,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Ressour
     #[ORM\Column(name: 'US_ADMIN_ACCOUNT_CREATED', options: ['default' => false])]
     #[Groups(['user:get'])]
     private ?bool $adminAccountCreated = false;
+
+    #[ORM\Column(name: 'US_TABLET_ACCOUNT_CREATED', options: ['default' => false])]
+    #[Groups(['user:get'])]
+    private ?bool $tabletAccountCreated = false;
 
     #[ORM\Column(name: 'US_CREATED_AT')]
     #[Groups(['user:get'])]
@@ -489,6 +504,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Ressour
             "ROLE_MANAGER" => UserProxyIntertace::PERSON_MANAGER,
             "ROLE_STAFF" => UserProxyIntertace::PERSON_STAFF,
             "ROLE_KITCHEN" => UserProxyIntertace::PERSON_KITCHEN,
+            "ROLE_WAITER" => UserProxyIntertace::PERSON_WAITER,
+            "ROLE_CASHIER" => UserProxyIntertace::PERSON_CASHIER,
+            "ROLE_SELF_ORDER" => UserProxyIntertace::PERSON_SELF_ORDER,
         ]);
     }
 
@@ -500,6 +518,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Ressour
             UserProxyIntertace::PERSON_MANAGER,
             UserProxyIntertace::PERSON_STAFF,
             UserProxyIntertace::PERSON_KITCHEN,
+            UserProxyIntertace::PERSON_WAITER,
+            UserProxyIntertace::PERSON_CASHIER,
+            UserProxyIntertace::PERSON_SELF_ORDER,
         ];
     }
 
@@ -511,6 +532,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Ressour
             "Manager" => UserProxyIntertace::PERSON_MANAGER,
             "Personnel" => UserProxyIntertace::PERSON_STAFF,
             "Cuisine" => UserProxyIntertace::PERSON_KITCHEN,
+            "Serveur" => UserProxyIntertace::PERSON_WAITER,
+            "Caissier" => UserProxyIntertace::PERSON_CASHIER,
+            "Commande (Self-Order)" => UserProxyIntertace::PERSON_SELF_ORDER,
         ];
     }
 
@@ -644,5 +668,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Ressour
     public function getDeleted(): bool|null
     {
         return $this->deleted;
+    }
+
+    /**
+     * Get the value of tabletAccountCreated
+     */ 
+    public function getTabletAccountCreated(): bool|null
+    {
+        return $this->tabletAccountCreated;
+    }
+
+    /**
+     * Set the value of tabletAccountCreated
+     *
+     * @return  self
+     */ 
+    public function setTabletAccountCreated(?bool $tabletAccountCreated): static
+    {
+        $this->tabletAccountCreated = $tabletAccountCreated;
+
+        return $this;
     }
 }

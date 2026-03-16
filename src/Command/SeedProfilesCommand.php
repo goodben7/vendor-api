@@ -27,10 +27,11 @@ class SeedProfilesCommand extends Command
         $pm = PermissionManager::getInstance();
         $all = array_map(fn($p) => $p->getPermissionId(), $pm->getPermissions());
 
+        $adminExcluded = ['ROLE_PLATFORM_CREATE', 'ROLE_PROFILE_CREATE', 'ROLE_PROFILE_UPDATE'];
         $admin = [
             'label' => 'Administrateur',
             'person' => UserProxyIntertace::PERSON_ADMIN,
-            'permissions' => $all,
+            'permissions' => array_values(array_filter($all, fn($id) => !in_array($id, $adminExcluded, true))),
         ];
 
         $managerPrefixes = [
@@ -91,7 +92,49 @@ class SeedProfilesCommand extends Command
             ],
         ];
 
-        foreach ([$admin, $manager, $staff, $kitchen] as $spec) {
+        $waiter = [
+            'label' => 'Serveur',
+            'person' => UserProxyIntertace::PERSON_WAITER,
+            'permissions' => [
+                // Voir le catalogue pour composer la commande
+                'ROLE_MENU_LIST', 'ROLE_MENU_DETAILS',
+                'ROLE_CATEGORY_LIST', 'ROLE_CATEGORY_DETAILS',
+                'ROLE_PRODUCT_LIST', 'ROLE_PRODUCT_DETAILS',
+                'ROLE_OPTION_GROUP_LIST', 'ROLE_OPTION_GROUP_DETAILS',
+                'ROLE_OPTION_ITEM_LIST', 'ROLE_OPTION_ITEM_DETAILS',
+                // Voir les tables de la plateforme
+                'ROLE_PLATFORM_TABLE_LIST', 'ROLE_PLATFORM_TABLE_DETAILS',
+                // Commande
+                'ROLE_ORDER_LIST', 'ROLE_ORDER_DETAILS',
+                'ROLE_ORDER_CREATE', 'ROLE_ORDER_SENT_TO_KITCHEN',
+            ],
+        ];
+
+        $cashier = [
+            'label' => 'Caissier',
+            'person' => UserProxyIntertace::PERSON_CASHIER,
+            'permissions' => [
+                'ROLE_PAYMENT_CREATE', 'ROLE_PAYMENT_LIST', 'ROLE_PAYMENT_DETAILS',
+                'ROLE_ORDER_LIST', 'ROLE_ORDER_DETAILS',
+            ],
+        ];
+
+        $selfOrder = [
+            'label' => 'Commande (Self-Order)',
+            'person' => UserProxyIntertace::PERSON_SELF_ORDER,
+            'permissions' => [
+                // Voir le catalogue minimal pour composer la commande
+                'ROLE_MENU_LIST', 'ROLE_MENU_DETAILS',
+                'ROLE_CATEGORY_LIST', 'ROLE_CATEGORY_DETAILS',
+                'ROLE_PRODUCT_LIST', 'ROLE_PRODUCT_DETAILS',
+                'ROLE_OPTION_GROUP_LIST', 'ROLE_OPTION_GROUP_DETAILS',
+                'ROLE_OPTION_ITEM_LIST', 'ROLE_OPTION_ITEM_DETAILS',
+                // Création de commande
+                'ROLE_ORDER_CREATE',
+            ],
+        ];
+
+        foreach ([$admin, $manager, $staff, $kitchen, $waiter, $cashier, $selfOrder] as $spec) {
             $repo = $this->em->getRepository(Profile::class);
             $existing = $repo->findOneBy(['personType' => $spec['person']]);
             $perms = array_values(array_intersect($all, $spec['permissions']));
@@ -114,4 +157,3 @@ class SeedProfilesCommand extends Command
         return Command::SUCCESS;
     }
 }
-

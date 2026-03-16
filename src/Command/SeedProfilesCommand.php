@@ -116,6 +116,9 @@ class SeedProfilesCommand extends Command
             'permissions' => [
                 'ROLE_PAYMENT_CREATE', 'ROLE_PAYMENT_LIST', 'ROLE_PAYMENT_DETAILS',
                 'ROLE_ORDER_LIST', 'ROLE_ORDER_DETAILS',
+                'ROLE_ORDER_CREATE',
+                'ROLE_PRODUCT_LIST',
+                'ROLE_PLATFORM_TABLE_LIST',
             ],
         ];
 
@@ -138,6 +141,9 @@ class SeedProfilesCommand extends Command
             $repo = $this->em->getRepository(Profile::class);
             $existing = $repo->findOneBy(['personType' => $spec['person']]);
             $perms = array_values(array_intersect($all, $spec['permissions']));
+            if (\in_array('ROLE_PLATFORM_LIST', $all, true) && !\in_array('ROLE_PLATFORM_LIST', $perms, true)) {
+                $perms[] = 'ROLE_PLATFORM_LIST';
+            }
             if ($existing) {
                 $existing->setLabel($spec['label']);
                 $existing->setPermission($perms);

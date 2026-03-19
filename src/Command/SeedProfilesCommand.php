@@ -78,6 +78,7 @@ class SeedProfilesCommand extends Command
                 'ROLE_PRODUCT_LIST', 'ROLE_PRODUCT_DETAILS',
                 'ROLE_OPTION_GROUP_LIST', 'ROLE_OPTION_GROUP_DETAILS',
                 'ROLE_OPTION_ITEM_LIST', 'ROLE_OPTION_ITEM_DETAILS',
+                'ROLE_OPTION_ITEM_CREATE',
                 'ROLE_PLATFORM_TABLE_LIST', 'ROLE_PLATFORM_TABLE_DETAILS',
                 'ROLE_TABLET_LIST', 'ROLE_TABLET_DETAILS',
             ],
@@ -107,6 +108,8 @@ class SeedProfilesCommand extends Command
                 // Commande
                 'ROLE_ORDER_LIST', 'ROLE_ORDER_DETAILS',
                 'ROLE_ORDER_CREATE', 'ROLE_ORDER_SENT_TO_KITCHEN',
+                'ROLE_ORDER_ITEM_CREATE',
+                'ROLE_ORDER_ITEM_OPTION_CREATE',
             ],
         ];
 
@@ -117,6 +120,8 @@ class SeedProfilesCommand extends Command
                 'ROLE_PAYMENT_CREATE', 'ROLE_PAYMENT_LIST', 'ROLE_PAYMENT_DETAILS',
                 'ROLE_ORDER_LIST', 'ROLE_ORDER_DETAILS',
                 'ROLE_ORDER_CREATE',
+                'ROLE_ORDER_ITEM_CREATE',
+                'ROLE_ORDER_ITEM_OPTION_CREATE',
                 'ROLE_PRODUCT_LIST',
                 'ROLE_PLATFORM_TABLE_LIST',
             ],
@@ -132,8 +137,13 @@ class SeedProfilesCommand extends Command
                 'ROLE_PRODUCT_LIST', 'ROLE_PRODUCT_DETAILS',
                 'ROLE_OPTION_GROUP_LIST', 'ROLE_OPTION_GROUP_DETAILS',
                 'ROLE_OPTION_ITEM_LIST', 'ROLE_OPTION_ITEM_DETAILS',
+                // Voir tablettes / tables pour s'attacher à une table et passer commande
+                'ROLE_PLATFORM_TABLE_LIST', 'ROLE_PLATFORM_TABLE_DETAILS',
+                'ROLE_TABLET_LIST', 'ROLE_TABLET_DETAILS',
                 // Création de commande
                 'ROLE_ORDER_CREATE',
+                'ROLE_ORDER_ITEM_CREATE',
+                'ROLE_ORDER_ITEM_OPTION_CREATE',
             ],
         ];
 
@@ -143,6 +153,18 @@ class SeedProfilesCommand extends Command
             $perms = array_values(array_intersect($all, $spec['permissions']));
             if (\in_array('ROLE_PLATFORM_LIST', $all, true) && !\in_array('ROLE_PLATFORM_LIST', $perms, true)) {
                 $perms[] = 'ROLE_PLATFORM_LIST';
+            }
+            if (\in_array('ROLE_PLATFORM_DETAILS', $all, true) && !\in_array('ROLE_PLATFORM_DETAILS', $perms, true)) {
+                $perms[] = 'ROLE_PLATFORM_DETAILS';
+            }
+            if (\in_array('ROLE_CURRENCY_LIST', $all, true) && !\in_array('ROLE_CURRENCY_LIST', $perms, true)) {
+                $perms[] = 'ROLE_CURRENCY_LIST';
+            }
+            if (\in_array('ROLE_CURRENCY_DETAILS', $all, true) && !\in_array('ROLE_CURRENCY_DETAILS', $perms, true)) {
+                $perms[] = 'ROLE_CURRENCY_DETAILS';
+            }
+            if (\in_array('ROLE_EXCHANGE_RATE_READ', $all, true) && !\in_array('ROLE_EXCHANGE_RATE_READ', $perms, true)) {
+                $perms[] = 'ROLE_EXCHANGE_RATE_READ';
             }
             if ($existing) {
                 $existing->setLabel($spec['label']);

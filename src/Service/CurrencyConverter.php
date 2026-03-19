@@ -33,7 +33,7 @@ class CurrencyConverter
         }
         $rate = $this->rates->findActiveRate($base, $target);
         if ($rate !== null) {
-            return bcadd($rate->getRate(), '0', 2);
+            return bcadd($rate->getRate(), '0', 6);
         }
 
         throw new UnavailableDataException('Active exchange rate not found');

@@ -15,7 +15,7 @@ API REST construite avec Symfony 8 et API Platform 4 pour la gestion de platefor
 
 - PHP 8.4+
 - Composer 2+
-- PostgreSQL 16 (ou via Docker compose)
+- MySQL 8 (ou via Docker compose)
 - OpenSSL (pour les clés JWT si régénération)
 
 ## Installation
@@ -122,10 +122,39 @@ API REST construite avec Symfony 8 et API Platform 4 pour la gestion de platefor
 
 ## Docker (optionnel)
 
-- Base de données PostgreSQL via `docker compose`:
+- Base de données MySQL via `docker compose`:
 
   ```bash
   docker compose up -d database
+  ```
+
+- Lancer l'API dans Docker:
+
+  ```bash
+  docker compose --env-file .env.docker -f compose.yaml -f compose.override.yaml up -d --build
+  ```
+
+- HTTPS local (Docker):
+  - L'API est accessible via Caddy en HTTPS: https://localhost:8000/api
+  - Comme le certificat est auto-signé (CA interne Caddy), il faut faire confiance au CA:
+
+  ```bash
+  docker compose --env-file .env.docker -f compose.yaml -f compose.override.yaml exec caddy sh -lc 'cat /data/caddy/pki/authorities/local/root.crt' > caddy-local-ca.crt
+  sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain caddy-local-ca.crt
+  ```
+
+- Installer les dépendances / lancer les migrations:
+
+  ```bash
+  docker compose --env-file .env.docker exec app composer install
+  docker compose --env-file .env.docker exec app php bin/console doctrine:database:create
+  docker compose --env-file .env.docker exec app php bin/console doctrine:migrations:migrate
+  ```
+
+- Alternative (sans --env-file): exporter les variables de `.env.docker` dans ton shell.
+
+  ```bash
+  docker compose up -d --build app
   ```
 
 - Mailer de dev (Mailpit):

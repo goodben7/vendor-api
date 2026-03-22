@@ -1,0 +1,10 @@
+.git
+.idea
+.vscode
+node_modules
+var/cache
+var/log
+public/media
+vendor
+bruno
+docker-desktop

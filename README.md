@@ -143,6 +143,29 @@ API REST construite avec Symfony 8 et API Platform 4 pour la gestion de platefor
   sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain caddy-local-ca.crt
   ```
 
+- Déploiement VPS (Ubuntu, domaine):
+
+  - Copier `.env.prod.example` vers `.env.prod` et remplir les valeurs.
+  - Générer les clés JWT sur le serveur (dans le repo):
+
+  ```bash
+  mkdir -p config/jwt
+  openssl genrsa -out config/jwt/private.pem -aes256 4096
+  openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem
+  chmod 600 config/jwt/private.pem
+  chmod 644 config/jwt/public.pem
+  ```
+
+  - Démarrer:
+
+  ```bash
+  docker compose --env-file .env.prod -f compose.prod.yaml up -d --build
+  docker compose --env-file .env.prod -f compose.prod.yaml exec app php bin/console doctrine:migrations:migrate -n
+  docker compose --env-file .env.prod -f compose.prod.yaml exec app php bin/console cache:clear --env=prod
+  ```
+
+  - URL: https://api.vendor.ereborhub.cloud/api
+
 - Installer les dépendances / lancer les migrations:
 
   ```bash

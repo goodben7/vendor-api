@@ -1,0 +1,7 @@
+api.vendor.ereborhub.cloud {
+  encode gzip zstd
+  root * /srv/public
+  php_fastcgi app:9000
+  file_server
+}
+

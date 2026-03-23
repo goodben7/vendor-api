@@ -164,6 +164,16 @@ API REST construite avec Symfony 8 et API Platform 4 pour la gestion de platefor
   docker compose --env-file .env.prod -f compose.prod.yaml exec app php bin/console cache:clear --env=prod
   ```
 
+  - Caddy déjà installé sur le VPS (recommandé):
+    - Le container expose HTTP local sur 127.0.0.1:8089
+    - Configurer le Caddyfile du VPS:
+
+  ```caddyfile
+  api.vendor.ereborhub.cloud {
+    reverse_proxy 127.0.0.1:8089
+  }
+  ```
+
   - URL: https://api.vendor.ereborhub.cloud/api
 
 - Installer les dépendances / lancer les migrations:

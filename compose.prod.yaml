@@ -19,19 +19,17 @@ services:
       database:
         condition: service_healthy
 
-  caddy:
-    image: caddy:2.8-alpine
+  web:
+    build:
+      context: .
+      dockerfile: docker/caddy/Dockerfile.web
     restart: unless-stopped
     depends_on:
       - app
     ports:
-      - "8089:80"
-      - "4430:443"
+      - "127.0.0.1:8089:80"
     volumes:
-      - ./docker/caddy/Caddyfile.prod:/etc/caddy/Caddyfile:ro
       - app_media:/srv/public/media:ro
-      - caddy_data:/data
-      - caddy_config:/config
 
   database:
     image: mysql:8.0
@@ -53,6 +51,3 @@ volumes:
   database_data:
   app_var:
   app_media:
-  caddy_data:
-  caddy_config:
-

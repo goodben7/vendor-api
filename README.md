@@ -146,6 +146,8 @@ API REST construite avec Symfony 8 et API Platform 4 pour la gestion de platefor
 - Déploiement VPS (Ubuntu, domaine):
 
   - Copier `.env.prod.example` vers `.env.prod` et remplir les valeurs.
+  - CORS:
+    - Mettre `CORS_ALLOW_ORIGIN` à l'origin exact du front (ex: `https://vendor-admin-hub.netlify.app`)
   - Générer les clés JWT sur le serveur (dans le repo):
 
   ```bash

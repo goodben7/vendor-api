@@ -25,6 +25,8 @@ RUN curl -fsSL https://getcomposer.org/installer -o /tmp/composer-installer.php 
 COPY composer.json composer.lock symfony.lock ./
 RUN composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader --no-scripts
 
+ENV APP_ENV=prod
+
 COPY . .
 RUN composer dump-autoload --no-dev --classmap-authoritative \
     && composer run-script post-install-cmd --no-dev

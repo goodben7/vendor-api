@@ -50,3 +50,11 @@ RUN docker-php-ext-install \
         zip
 
 COPY --from=builder /srv /srv
+
+RUN mkdir -p /srv/var/cache /srv/var/log /srv/public/media \
+    && chown -R www-data:www-data /srv/var /srv/public/media
+
+COPY docker/php/entrypoint.prod.sh /usr/local/bin/entrypoint.prod.sh
+RUN chmod +x /usr/local/bin/entrypoint.prod.sh
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.prod.sh"]

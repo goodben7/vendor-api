@@ -2,6 +2,8 @@
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.docker
+/.env.prod
+/.env.prod.local
 /.env.local.php
 /.env.*.local
 /config/secrets/prod/prod.decrypt.private.php
@@ -9,7 +11,6 @@
 /public/media/
 /var/
 /bruno/
-/env.prod
 /vendor/
 ###< symfony/framework-bundle ###
 

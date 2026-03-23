@@ -23,10 +23,11 @@ RUN curl -fsSL https://getcomposer.org/installer -o /tmp/composer-installer.php 
     && rm /tmp/composer-installer.php
 
 COPY composer.json composer.lock symfony.lock ./
-RUN composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader
+RUN composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader --no-scripts
 
 COPY . .
-RUN composer dump-autoload --no-dev --classmap-authoritative
+RUN composer dump-autoload --no-dev --classmap-authoritative \
+    && composer run-script post-install-cmd --no-dev
 
 
 FROM php:8.4-fpm-bookworm
@@ -47,4 +48,3 @@ RUN docker-php-ext-install \
         zip
 
 COPY --from=builder /srv /srv
-

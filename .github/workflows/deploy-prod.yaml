@@ -1,0 +1,50 @@
+name: Deploy (Production)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: {}
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        shell: bash
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          echo "${{ secrets.VPS_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p "${{ secrets.VPS_SSH_PORT }}" -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy via SSH
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.VPS_HOST }}
+          SSH_PORT: ${{ secrets.VPS_SSH_PORT }}
+          SSH_USER: ${{ secrets.VPS_SSH_USER }}
+          DEPLOY_PATH: ${{ secrets.VPS_DEPLOY_PATH }}
+          GIT_REF: ${{ github.ref_name }}
+        run: |
+          ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "set -e
+            cd \"$DEPLOY_PATH\"
+            git fetch --all --prune
+            git checkout \"$GIT_REF\"
+            git reset --hard \"origin/$GIT_REF\"
+            docker compose --env-file .env.prod -f compose.prod.yaml pull --ignore-pull-failures || true
+            docker compose --env-file .env.prod -f compose.prod.yaml up -d --build
+            docker compose --env-file .env.prod -f compose.prod.yaml exec -T -u 0 app sh -lc 'chown -R www-data:www-data /srv/var && chmod -R u+rwX,g+rwX /srv/var'
+            docker compose --env-file .env.prod -f compose.prod.yaml exec -T -u www-data app php bin/console doctrine:migrations:migrate -n
+            docker compose --env-file .env.prod -f compose.prod.yaml exec -T -u www-data app php bin/console cache:clear --env=prod
+          "
+

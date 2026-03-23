@@ -178,6 +178,21 @@ API REST construite avec Symfony 8 et API Platform 4 pour la gestion de platefor
 
   - URL: https://api.vendor.ereborhub.cloud/api
 
+## CI/CD (GitHub Actions)
+
+- Workflow: `.github/workflows/deploy-prod.yaml`
+- Déclenchement: push sur `main` (et manuel via `workflow_dispatch`)
+- Prérequis sur le VPS:
+  - Le repo est cloné dans un dossier (ex: `/srv/vendor-api`)
+  - `docker compose` est installé et l'utilisateur SSH peut exécuter Docker
+  - `.env.prod` existe sur le VPS (non commité) et contient les variables prod
+- Secrets à créer dans GitHub (repo → Settings → Secrets and variables → Actions):
+  - `VPS_HOST`: IP ou hostname du VPS
+  - `VPS_SSH_PORT`: port SSH (ex: `22`)
+  - `VPS_SSH_USER`: utilisateur SSH (ex: `ubuntu`)
+  - `VPS_SSH_PRIVATE_KEY`: clé privée SSH (format OpenSSH)
+  - `VPS_DEPLOY_PATH`: chemin du repo sur le VPS (ex: `/srv/vendor-api`)
+
 - Installer les dépendances / lancer les migrations:
 
   ```bash

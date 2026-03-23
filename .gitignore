@@ -9,6 +9,7 @@
 /public/media/
 /var/
 /bruno/
+/env.prod
 /vendor/
 ###< symfony/framework-bundle ###
 

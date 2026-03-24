@@ -26,6 +26,8 @@ COPY composer.json composer.lock symfony.lock ./
 RUN composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader --no-scripts
 
 ENV APP_ENV=prod
+ENV TRUSTED_PROXIES=127.0.0.1,172.16.0.0/12,10.0.0.0/8
+ENV TRUSTED_HOSTS=^localhost$
 
 COPY . .
 RUN composer dump-autoload --no-dev --classmap-authoritative \

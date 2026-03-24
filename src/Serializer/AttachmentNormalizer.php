@@ -3,6 +3,7 @@ namespace App\Serializer;
 
 use App\Model\AttachmentInterface;
 use Vich\UploaderBundle\Storage\StorageInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareTrait;
@@ -13,7 +14,8 @@ class AttachmentNormalizer implements NormalizerInterface, NormalizerAwareInterf
     private const string ALREADY_CALLED = 'attachment_normalizer_already_called';
 
     public function __construct(
-        private readonly StorageInterface $storage
+        private readonly StorageInterface $storage,
+        private readonly RequestStack $requestStack
     )
     {
     }
@@ -24,7 +26,13 @@ class AttachmentNormalizer implements NormalizerInterface, NormalizerAwareInterf
     public function normalize($object, ?string $format = null, array $context = []): array|string|int|float|bool|\ArrayObject|null
     {
         $context[self::ALREADY_CALLED] = true;
-        $object->setContentUrl($this->storage->resolveUri($object, 'file'));
+        $path = $this->storage->resolveUri($object, 'file');
+        $request = $this->requestStack->getCurrentRequest();
+        if ($request && \is_string($path) && $path !== '' && str_starts_with($path, '/')) {
+            $object->setContentUrl($request->getSchemeAndHttpHost() . $path);
+        } else {
+            $object->setContentUrl($path);
+        }
 
         return $this->normalizer->normalize($object, $format, $context);
     }

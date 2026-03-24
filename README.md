@@ -148,6 +148,8 @@ API REST construite avec Symfony 8 et API Platform 4 pour la gestion de platefor
   - Copier `.env.prod.example` vers `.env.prod` et remplir les valeurs.
   - CORS:
     - Mettre `CORS_ALLOW_ORIGIN` à l'origin exact du front (ex: `https://vendor-admin-hub.netlify.app`)
+  - Reverse proxy (recommandé):
+    - Mettre `TRUSTED_PROXIES` et `TRUSTED_HOSTS` dans `.env.prod` (sinon Symfony peut générer des URLs en http ou sur un mauvais host)
   - Générer les clés JWT sur le serveur (dans le repo):
 
   ```bash

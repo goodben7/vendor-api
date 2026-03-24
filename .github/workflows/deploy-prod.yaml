@@ -23,9 +23,19 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
-          echo "${{ secrets.VPS_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          if [ -z "${{ secrets.VPS_HOST }}" ] || [ -z "${{ secrets.VPS_SSH_USER }}" ] || [ -z "${{ secrets.VPS_SSH_PRIVATE_KEY }}" ] || [ -z "${{ secrets.VPS_DEPLOY_PATH }}" ]; then
+            echo "Missing required secrets. Check VPS_HOST, VPS_SSH_USER, VPS_SSH_PRIVATE_KEY, VPS_DEPLOY_PATH."
+            exit 1
+          fi
+
+          if [ -z "${{ secrets.VPS_SSH_PORT }}" ]; then
+            echo "Missing VPS_SSH_PORT secret (usually 22)."
+            exit 1
+          fi
+
+          printf '%s\n' "${{ secrets.VPS_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -p "${{ secrets.VPS_SSH_PORT }}" -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+          ssh-keyscan -T 10 -p "${{ secrets.VPS_SSH_PORT }}" -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
 
       - name: Deploy via SSH
         shell: bash
@@ -36,7 +46,7 @@ jobs:
           DEPLOY_PATH: ${{ secrets.VPS_DEPLOY_PATH }}
           GIT_REF: ${{ github.ref_name }}
         run: |
-          ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "set -e
+          ssh -i ~/.ssh/id_rsa -o BatchMode=yes -o StrictHostKeyChecking=yes -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "set -e
             cd \"$DEPLOY_PATH\"
             git fetch --all --prune
             git checkout \"$GIT_REF\"
@@ -47,4 +57,3 @@ jobs:
             docker compose --env-file .env.prod -f compose.prod.yaml exec -T -u www-data app php bin/console doctrine:migrations:migrate -n
             docker compose --env-file .env.prod -f compose.prod.yaml exec -T -u www-data app php bin/console cache:clear --env=prod
           "
-
